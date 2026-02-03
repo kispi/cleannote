@@ -26,8 +26,8 @@ export const GET = async ({ url, locals }) => {
     .where(
       and(
         eq(buildings.user_id, locals.user.id),
-        gte(cleaningLogs.cleaned_date, startOfMonth),
-        lte(cleaningLogs.cleaned_date, endOfMonth),
+        gte(cleaningLogs.clean_start, startOfMonth),
+        lte(cleaningLogs.clean_start, endOfMonth),
         eq(cleaningLogs.status, 'completed')
       )
     )

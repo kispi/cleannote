@@ -28,8 +28,8 @@ export const GET = async ({ url, locals }) => {
     .from(cleaningLogs)
     .where(
       and(
-        gte(cleaningLogs.cleaned_date, startOfDay),
-        lte(cleaningLogs.cleaned_date, endOfDay)
+        gte(cleaningLogs.clean_start, startOfDay),
+        lte(cleaningLogs.clean_start, endOfDay)
       )
     )
 

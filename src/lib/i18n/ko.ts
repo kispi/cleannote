@@ -19,6 +19,9 @@ export default {
     completed: '완료',
     pending: '대기'
   },
+  cleaning: {
+    add_record: '청소 기록 추가'
+  },
   nav: {
     home: '홈',
     buildings: '건물',
@@ -75,6 +78,8 @@ export default {
         added: '추가되었습니다.',
         deleted: '삭제되었습니다.',
         error: '오류가 발생했습니다.'
-    }
+    },
+    date: '날짜',
+    time: '시간'
   }
 } as const

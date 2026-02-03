@@ -72,11 +72,16 @@ export const buildings = mysqlTable('buildings', {
 
 // Cleaning Logs Table
 export const cleaningLogs = mysqlTable('cleaning_logs', {
-  ...baseModel,
+  id: bigint('id', { mode: 'number' }).primaryKey().autoincrement(),
   building_id: bigint('building_id', { mode: 'number' })
     .notNull()
     .references(() => buildings.id),
-  cleaned_date: timestamp('cleaned_date').notNull(),
-  earned_amount: int('earned_amount').default(0),
-  status: mysqlEnum('status', ['completed', 'skipped']).default('completed')
+  clean_start: timestamp('clean_start').notNull().defaultNow(),
+  clean_end: timestamp('clean_end').notNull().defaultNow(),
+  status: varchar('status', { length: 20 }).notNull().default('completed'), // completed, skipped
+  earned_amount: int('earned_amount').notNull().default(0),
+
+  created_at: timestamp('created_at').notNull().defaultNow(),
+  updated_at: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),
+  deleted_at: timestamp('deleted_at')
 })

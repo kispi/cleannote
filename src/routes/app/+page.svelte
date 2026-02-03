@@ -3,7 +3,8 @@
   import { t } from '$lib/i18n'
   import { ui } from '$lib/store/ui.svelte'
   import dayjs from 'dayjs'
-  import { CheckCircle2, Circle, Trophy } from 'lucide-svelte'
+  import { CheckCircle2, Circle, Trophy, Plus } from 'lucide-svelte'
+  import ModalCleaningAdd from '$lib/components/modals/ModalCleaningAdd.svelte'
 
   let { data } = $props()
 
@@ -48,7 +49,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             building_id: quest.building.id,
-            date: today,
+            clean_start: dayjs().toISOString(),
             status: 'completed'
           })
         })
@@ -83,6 +84,20 @@
       <span class="text-xl font-bold text-gray-500 dark:text-gray-400">{t('common.unit_won')}</span>
     </div>
   </header>
+
+  <!-- Add Record Action -->
+  <button
+    class="mb-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 p-4 font-bold text-white shadow-lg shadow-blue-200 transition-transform active:scale-[0.98] dark:bg-blue-600 dark:shadow-none"
+    onclick={() =>
+      ui.modal.show(
+        ModalCleaningAdd,
+        { buildings: questsQuery.data?.map((q: any) => q.building) || [] },
+        { preventCloseOnClickBackdrop: true }
+      )}
+  >
+    <Plus />
+    {t('cleaning.add_record')}
+  </button>
 
   <!-- Section: Today's Quests -->
   <section class="mb-8">

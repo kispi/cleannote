@@ -40,6 +40,7 @@ trigger: always_on
   - `updated_at`: Timestamp, default `CURRENT_TIMESTAMP`, on update now.
   - `deleted_at`: Timestamp, Nullable (for Soft Delete).
 - **Soft Delete:** REQUIRED for all models. Queries must explicitly filter `WHERE deleted_at IS NULL`.
+- **Timezone:** All timestamps stored in the database MUST be in **UTC**.
 
 ## 4. API Design (Strict REST)
 
@@ -63,6 +64,8 @@ trigger: always_on
 - **Global UI Helpers:**
   - Do NOT embed Modal/Toast components in pages.
   - Use global helpers via Javascript: e.g., `ui.modal.show()`, `ui.toast.show()`.
+- **Form Elements:**
+  - Use `<Dropdown />` instead of native `<select>` for better styling and control.
 - **Modal Conventions:**
   - **Path:** All modal components must be in `@/lib/components/modals/`.
   - **Naming:** Must start with `Modal` (e.g., `ModalBuildingAdd.svelte`).

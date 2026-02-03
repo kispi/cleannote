@@ -10,16 +10,13 @@ export const POST = async ({ request, locals }) => {
   }
 
   const body = await request.json()
-  const { building_id, date, status } = body
+  const { building_id, clean_start, clean_end, status } = body
 
-  if (!building_id || !date || !status) {
+  if (!building_id || !clean_start || !status) {
     return json({ error: 'Missing required fields' }, { status: 400 })
   }
 
   // Calculate earned amount
-  // We should fetch the building to get current price.
-  // Note: If price changes, historical logs keep their value (good).
-  // But here we insert new log.
   const [building] = await db
     .select()
     .from(buildings)
@@ -30,21 +27,14 @@ export const POST = async ({ request, locals }) => {
   }
 
   const earned_amount = status === 'completed' ? (building.price_per_clean || 0) : 0
-  const cleaned_date = dayjs(date).toDate()
-
-  // Verify if already exists? 
-  // For MVP, we assume client handles duplicates or we just insert.
-  // Ideally toggle logic handles delete/insert.
-  // But "POST" creates. "DELETE" removes log?
-  // The user might toggle off -> delete log.
-  // Or toggle skipped -> update log.
-  // Let's assume this endpoint handles CREATION.
-  // If usage implies toggling, client might call DELETE then POST, or strict POST.
-  // Let's stick to POST creates.
+  
+  const start = dayjs(clean_start)
+  const end = clean_end ? dayjs(clean_end) : start.add(1, 'hour')
 
   const [result] = await db.insert(cleaningLogs).values({
     building_id,
-    cleaned_date,
+    clean_start: start.toDate(),
+    clean_end: end.toDate(),
     earned_amount,
     status
   })

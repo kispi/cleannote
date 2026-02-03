@@ -24,24 +24,33 @@
 
   <!-- Bottom Navigation -->
   <nav
-    class="sticky bottom-0 z-50 flex items-center justify-between border-t border-gray-100 bg-white/90 px-8 py-3 backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/90"
+    class="sticky bottom-0 z-50 flex w-full items-center justify-between border-t border-gray-100 bg-white/90 backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/90"
   >
-    <a href="/app" class="flex flex-col items-center gap-1 transition-colors {activeClass('/app')}">
-      <Home size={24} />
+    <a
+      href="/app"
+      class="group flex flex-1 flex-col items-center justify-center gap-1 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 {activeClass(
+        '/app'
+      )}"
+    >
+      <Home size={24} class="transition-transform group-active:scale-95" />
       <span class="text-[10px] font-medium">{t('nav.home')}</span>
     </a>
     <a
       href="/app/buildings"
-      class="flex flex-col items-center gap-1 transition-colors {activeClass('/app/buildings')}"
+      class="group flex flex-1 flex-col items-center justify-center gap-1 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 {activeClass(
+        '/app/buildings'
+      )}"
     >
-      <Building size={24} />
+      <Building size={24} class="transition-transform group-active:scale-95" />
       <span class="text-[10px] font-medium">{t('nav.buildings')}</span>
     </a>
     <a
       href="/app/settings"
-      class="flex flex-col items-center gap-1 transition-colors {activeClass('/app/settings')}"
+      class="group flex flex-1 flex-col items-center justify-center gap-1 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 {activeClass(
+        '/app/settings'
+      )}"
     >
-      <Settings size={24} />
+      <Settings size={24} class="transition-transform group-active:scale-95" />
       <span class="text-[10px] font-medium">{t('nav.settings')}</span>
     </a>
   </nav>

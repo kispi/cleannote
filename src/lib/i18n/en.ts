@@ -19,6 +19,9 @@ export default {
     completed: 'Completed',
     pending: 'Pending'
   },
+  cleaning: {
+    add_record: 'Add Cleaning Record'
+  },
   nav: {
      home: 'Home',
      buildings: 'Buildings',
@@ -75,6 +78,8 @@ export default {
          added: 'Added successfully.',
          deleted: 'Deleted successfully.',
          error: 'An error occurred.'
-     }
+     },
+    date: 'Date',
+    time: 'Time'
   }
 } as const
