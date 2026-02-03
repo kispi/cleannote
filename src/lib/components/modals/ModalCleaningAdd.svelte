@@ -4,63 +4,87 @@
   import { t } from '$lib/i18n'
   import dayjs from 'dayjs'
   import Dropdown from '$lib/components/ui/Dropdown.svelte'
-  import { useCreateCleaningLog } from '$lib/hooks/useCleaningLogs'
+  import { useCreateCleaningLog, useUpdateCleaningLog } from '$lib/hooks/useCleaningLogs'
+  import FormPrice from '$lib/components/ui/FormPrice.svelte'
   import { priceWithSign } from '$lib/utils/format'
 
   interface Props {
     buildings: any[] // passed from parent
+    log?: any // Optional log for editing
   }
 
-  let { buildings }: Props = $props()
+  let { buildings, log }: Props = $props()
 
   const createMutation = useCreateCleaningLog()
+  const updateMutation = useUpdateCleaningLog()
 
-  let selectedBuildingId = $state<number | null>(null)
+  // Initialize state
+  let selectedBuildingId = $state<number | null>(log?.building.id || null)
+  let earnedAmount = $state<number>(log?.earnedAmount || 0)
 
-  // Default to today
-  let date = $state(dayjs().format('YYYY-MM-DD'))
-  // Default time? Maybe current time rounded? or just empty?
-  // User suggestion: "ex: 14:00".
-  let time = $state(dayjs().format('HH:mm'))
+  // Track previous building to prevent overwriting earnedAmount on init
+  let previousBuildingId = $state<number | null>(log?.building.id || null)
+
+  // Default to today or log date
+  let date = $state(log ? dayjs(log.cleanStart).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'))
+  let time = $state(log ? dayjs(log.cleanStart).format('HH:mm') : dayjs().format('HH:mm'))
 
   const currentDay = dayjs().day()
 
   let buildingOptions = $derived(
     buildings
       .map((b) => {
-        const scheduled = b.scheduled_days ? b.scheduled_days.split(',').map(Number) : []
+        const scheduled = b.scheduledDays ? b.scheduledDays.split(',').map(Number) : []
         const isToday = scheduled.includes(currentDay)
         return {
           value: b.id,
           label: b.name,
           address: b.address,
-          price: b.price_per_clean,
+          price: b.pricePerClean,
           isToday
         }
       })
       .sort((a, b) => Number(b.isToday) - Number(a.isToday))
   )
 
+  $effect(() => {
+    if (selectedBuildingId && selectedBuildingId !== previousBuildingId) {
+      previousBuildingId = selectedBuildingId
+      const b = buildings.find((b) => b.id === selectedBuildingId)
+      if (b) {
+        earnedAmount = b.pricePerClean || 0
+      }
+    }
+  })
+
+  // Initial check for default Create mode (no log) - set default price if user selects valid building first time
+  // Actually the above effect handles change. But if I start with null (Create mode), and select a building,
+  // previous is null, selected is X. mismatch -> updates price. Correct.
+
   const handleSubmit = (e: Event) => {
     e.preventDefault()
     if (!selectedBuildingId || !date || !time) return
 
-    // Construct ISO string
-    // Combine YYYY-MM-DD and HH:mm
-    const clean_start = dayjs(`${date} ${time}`).toISOString()
-
-    createMutation.mutate({
-      building_id: selectedBuildingId,
-      clean_start,
+    const cleanStart = dayjs(`${date} ${time}`).toISOString()
+    const payload = {
+      buildingId: selectedBuildingId,
+      cleanStart,
+      earnedAmount,
       status: 'completed'
-    })
+    }
+
+    if (log) {
+      updateMutation.mutate({ id: log.id, ...payload })
+    } else {
+      createMutation.mutate(payload)
+    }
   }
 </script>
 
 <div class="modal-cleaning-add bg-base-100 relative w-full p-6">
   <div class="mb-6 flex items-center justify-between">
     <h2 class="text-base-content text-xl font-bold">
-      {t('cleaning.add_record')}
+      {log ? t('cleaning.edit_record') : t('cleaning.add_record')}
     </h2>
     <button
       type="button"
@@ -74,7 +98,7 @@
   <form onsubmit={handleSubmit} class="space-y-4">
     <!-- Building Select -->
     <div>
-      <label for="building_id" class="text-base-content mb-1 block text-sm font-medium"
+      <label for="building_id" class="text-base-content mb-2 block text-sm font-medium"
         >{t('building.name')}</label
       >
       <Dropdown
@@ -109,7 +133,7 @@
 
     <!-- Date -->
     <div>
-      <label for="date" class="text-base-content mb-1 block text-sm font-medium"
+      <label for="date" class="text-base-content mb-2 block text-sm font-medium"
         >{t('common.date')}</label
       >
       <input
@@ -121,7 +145,7 @@
 
     <!-- Time -->
     <div>
-      <label for="time" class="text-base-content mb-1 block text-sm font-medium"
+      <label for="time" class="text-base-content mb-2 block text-sm font-medium"
         >{t('common.time')}</label
       >
       <input
@@ -131,13 +155,18 @@
       />
     </div>
 
+    <!-- Earned Amount -->
+    <div>
+      <FormPrice bind:value={earnedAmount} label={t('home.monthly_revenue')} id="earned_amount" />
+    </div>
+
     <div class="mt-6">
       <button
         type="submit"
         class="btn-primary w-full"
         disabled={!selectedBuildingId || !date || !time}
       >
-        {t('common.add')}
+        {log ? t('common.save') : t('common.add')}
       </button>
     </div>
   </form>

@@ -64,7 +64,7 @@
 
   <!-- Add Record Action -->
   <button
-    class="btn-primary mb-8 w-full rounded-2xl shadow-lg active:scale-[0.98] dark:shadow-none"
+    class="btn-primary mb-8 w-full rounded-xl shadow-lg active:scale-[0.98] dark:shadow-none"
     onclick={() =>
       ui.modal.show({
         component: ModalCleaningAdd,
@@ -90,7 +90,7 @@
       </div>
     {:else if logsQuery.data?.length === 0}
       <div
-        class="bg-base-200 flex flex-col items-center justify-center rounded-2xl border border-gray-100 py-12 text-center dark:border-gray-800"
+        class="bg-base-200 flex flex-col items-center justify-center rounded-xl border border-gray-100 py-12 text-center dark:border-gray-800"
       >
         <div
           class="mb-3 rounded-full bg-blue-100 p-4 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
@@ -103,32 +103,50 @@
     {:else}
       <div class="space-y-3">
         {#each logsQuery.data as log (log.id)}
-          <div
-            class="group bg-base-100 flex w-full items-center justify-between rounded-2xl border p-5 shadow-sm transition-all dark:border-gray-700 dark:bg-gray-800/50"
+          <button
+            class="card group flex w-full items-center justify-between text-left transition-all active:scale-[0.99]"
+            onclick={() =>
+              ui.modal.show({
+                component: ModalCleaningAdd,
+                props: {
+                  buildings: buildingsQuery.data || [],
+                  log
+                },
+                options: { preventCloseOnClickBackdrop: true }
+              })}
           >
-            <div class="text-left">
+            <div>
               <h4 class="text-base-content text-lg font-bold">
                 {log.building.name}
               </h4>
               <p class="text-sub-content mt-0.5 text-sm">
-                {dayjs(log.clean_start).format('MM.DD (dd)')} • {log.building.address || ''}
+                {dayjs(log.cleanStart).format('MM.DD (dd)')} • {log.building.address || ''}
               </p>
-              {#if log.earned_amount > 0}
+              {#if log.earnedAmount > 0}
                 <p class="mt-1 font-bold text-blue-600 dark:text-blue-400">
-                  {priceWithSign(log.earned_amount)}
+                  {priceWithSign(log.earnedAmount)}
                 </p>
               {/if}
             </div>
 
-            <button
-              class="text-sub-content rounded-full p-3 transition-colors hover:bg-red-50 hover:text-red-500 active:scale-90 dark:hover:bg-red-900/20"
-              onclick={() => handleDelete(log)}
-              disabled={deleteMutation.isPending}
-              aria-label="Delete log"
+            <div
+              role="button"
+              tabindex="0"
+              class="text-sub-content hover:bg-base-200 z-10 rounded-full p-3 transition-colors hover:text-red-500 active:scale-90 dark:hover:bg-red-900/20"
+              onclick={(e) => {
+                e.stopPropagation()
+                handleDelete(log)
+              }}
+              onkeydown={(e) => {
+                if (e.key === 'Enter') {
+                  e.stopPropagation()
+                  handleDelete(log)
+                }
+              }}
             >
               <Trash2 size={20} />
-            </button>
-          </div>
+            </div>
+          </button>
         {/each}
       </div>
     {/if}

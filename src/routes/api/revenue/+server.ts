@@ -12,12 +12,6 @@ export const GET = async ({ url, locals }) => {
   const monthStr = url.searchParams.get('month') || dayjs().format('YYYY-MM')
   const startOfMonth = dayjs(monthStr).startOf('month').toDate()
   const endOfMonth = dayjs(monthStr).endOf('month').toDate()
-
-  // We need to join with buildings to ensure it belongs to user
-  // cleaning_logs -> buildings -> users
-  
-  console.log('[Revenue API] Params:', { monthStr, userId: locals.user.id })
-  
   const result = await db
     .select({
       totalAmount: sql<number>`COALESCE(sum(${cleaningLogs.earned_amount}), 0)`,
@@ -33,8 +27,6 @@ export const GET = async ({ url, locals }) => {
         eq(cleaningLogs.status, 'completed')
       )
     )
-
-  console.log('[Revenue API] Result:', result)
 
   const stats = result[0] || { totalAmount: 0, completedCount: 0 }
 

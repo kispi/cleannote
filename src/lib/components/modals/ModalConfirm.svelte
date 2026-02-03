@@ -26,7 +26,7 @@
   }
 </script>
 
-<div class="modal-confirm bg-base-100 w-full rounded-2xl p-6 shadow-xl">
+<div class="modal-confirm bg-base-100 w-full p-6">
   <h3 class="text-base-content mb-2 text-xl font-bold">{title}</h3>
   <p class="text-sub-content mb-6 text-sm">{message}</p>
 

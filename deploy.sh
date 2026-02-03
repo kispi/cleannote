@@ -2,7 +2,7 @@
 set -e # Exit immediately if a command exits with a non-zero status
 
 # Configuration
-PROJECT_DIR="/home/ubuntu/web/cleanquest" 
+PROJECT_DIR="/home/ubuntu/web/cleannote" 
 
 # Load environment (NVM, PM2, etc.)
 # This ensures that non-interactive shells have access to the correct Node version
@@ -26,6 +26,6 @@ echo "🏗️ Building project..."
 npm run build
 
 echo "🔄 Restarting application with PM2..."
-pm2 restart cleanquest || pm2 start npm --name "cleanquest" -- run start
+pm2 restart cleannote || pm2 start npm --name "cleannote" -- run start
 
 echo "✅ Deployment finished successfully!"

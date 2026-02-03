@@ -20,4 +20,4 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            bash -l ~/web/cleanquest/deploy.sh
+            bash -l ~/web/cleannote/deploy.sh

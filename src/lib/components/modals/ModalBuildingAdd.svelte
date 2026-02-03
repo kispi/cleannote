@@ -4,6 +4,7 @@
   import { t } from '$lib/i18n'
   import { korPrice } from '$lib/utils/format'
   import { useUpsertBuilding, useDeleteBuilding } from '$lib/hooks/useBuildings'
+  import FormPrice from '$lib/components/ui/FormPrice.svelte'
   import ModalConfirm from './ModalConfirm.svelte'
 
   interface Props {
@@ -11,8 +12,8 @@
       id: number
       name: string
       address: string | null
-      price_per_clean: number | null
-      scheduled_days: string | null
+      pricePerClean: number | null
+      scheduledDays: string | null
     }
   }
 
@@ -32,8 +33,8 @@
     if (building) {
       name = building.name
       address = building.address || ''
-      price = building.price_per_clean || 0
-      days = building.scheduled_days ? building.scheduled_days.split(',').map(Number) : []
+      price = building.pricePerClean || 0
+      days = building.scheduledDays ? building.scheduledDays.split(',').map(Number) : []
     } else {
       name = ''
       address = ''
@@ -68,8 +69,8 @@
       id: building?.id,
       name,
       address,
-      price_per_clean: price,
-      scheduled_days: days.join(',')
+      pricePerClean: price,
+      scheduledDays: days.join(',')
     })
   }
 
@@ -109,7 +110,7 @@
   <form onsubmit={handleSubmit} class="space-y-4">
     <!-- ... name/address inputs ... -->
     <div>
-      <label for="name" class="text-base-content mb-1 block text-sm font-medium"
+      <label for="name" class="text-base-content mb-2 block text-sm font-medium"
         >{t('building.name')}</label
       >
       <input
@@ -121,7 +122,7 @@
     </div>
 
     <div>
-      <label for="address" class="text-base-content mb-1 block text-sm font-medium"
+      <label for="address" class="text-base-content mb-2 block text-sm font-medium"
         >{t('building.address')}</label
       >
       <input
@@ -133,55 +134,7 @@
     </div>
 
     <div>
-      <label for="price" class="text-base-content mb-1 block text-sm font-medium"
-        >{t('building.price')}</label
-      >
-      <div class="relative">
-        <input
-          type="number"
-          bind:value={price}
-          max="99999999"
-          oninput={() => {
-            if (price > 99999999) price = 99999999
-            if (price < 0) price = 0
-          }}
-          onkeydown={(e) => {
-            if (e.key === 'ArrowUp') {
-              e.preventDefault()
-              const next = Math.floor(price / 1000) * 1000 + 1000
-              price = next > 99999999 ? 99999999 : next
-            }
-            if (e.key === 'ArrowDown') {
-              e.preventDefault()
-              const next = Math.ceil(price / 1000) * 1000 - 1000
-              price = next < 0 ? 0 : next
-            }
-          }}
-          class="border-base bg-base-100 text-base-content placeholder:text-sub-content w-full rounded-xl border px-4 py-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-        />
-        <!-- Removed absolute '원' span here -->
-      </div>
-      <div class="mt-2 flex items-center gap-3">
-        <div class="flex gap-2 overflow-x-auto">
-          {#each [10000, 50000, 100000] as amount}
-            <button
-              type="button"
-              onclick={() => {
-                const next = price + amount
-                price = next > 99999999 ? 99999999 : next
-              }}
-              class="bg-base-200 text-sub-content rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
-            >
-              +{amount.toLocaleString()}
-            </button>
-          {/each}
-        </div>
-        {#if price > 0}
-          <span class="ml-auto text-sm font-bold text-blue-600 dark:text-blue-400">
-            {korPrice(price)}
-          </span>
-        {/if}
-      </div>
+      <FormPrice bind:value={price} label={t('building.price')} id="price" placeholder="0" />
     </div>
 
     <div>

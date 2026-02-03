@@ -3,6 +3,7 @@ import { env } from '$env/dynamic/private'
 import { db } from '$lib/server/db'
 import { accounts, users } from '$lib/server/db/schema'
 import { createSession, setSessionCookie } from '$lib/server/auth'
+import { generateRandomName } from '$lib/server/nameGenerator'
 import { eq, and } from 'drizzle-orm'
 
 export const GET = async ({ url, cookies }) => {
@@ -66,7 +67,7 @@ export const GET = async ({ url, cookies }) => {
   } else {
     // New User
     const [result] = await db.insert(users).values({
-      name: nickname,
+      name: generateRandomName(),
       email: email,
       avatar_url: avatar
     })

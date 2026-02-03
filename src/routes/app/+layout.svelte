@@ -24,11 +24,11 @@
 
   <!-- Bottom Navigation -->
   <nav
-    class="sticky bottom-0 z-50 flex w-full items-center justify-between border-t border-gray-100 bg-white/90 backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/90"
+    class="sticky bottom-0 z-50 flex w-full items-center justify-between rounded-t-3xl bg-white/95 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] backdrop-blur-md dark:border-t dark:border-gray-800 dark:bg-gray-900/95"
   >
     <a
       href="/app"
-      class="group flex flex-1 flex-col items-center justify-center gap-1 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 {activeClass(
+      class="group flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 {activeClass(
         '/app'
       )}"
     >
@@ -37,7 +37,7 @@
     </a>
     <a
       href="/app/buildings"
-      class="group flex flex-1 flex-col items-center justify-center gap-1 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 {activeClass(
+      class="group flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 {activeClass(
         '/app/buildings'
       )}"
     >
@@ -46,7 +46,7 @@
     </a>
     <a
       href="/app/settings"
-      class="group flex flex-1 flex-col items-center justify-center gap-1 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 {activeClass(
+      class="group flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 {activeClass(
         '/app/settings'
       )}"
     >

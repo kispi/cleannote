@@ -10,29 +10,32 @@ export const POST = async ({ request, locals }) => {
   }
 
   const body = await request.json()
-  const { building_id, clean_start, clean_end, status } = body
+  const { buildingId, cleanStart, cleanEnd, status, earnedAmount } = body
 
-  if (!building_id || !clean_start || !status) {
+  if (!buildingId || !cleanStart || !status) {
     return json({ error: 'Missing required fields' }, { status: 400 })
   }
 
-  // Calculate earned amount
-  const [building] = await db
-    .select()
-    .from(buildings)
-    .where(eq(buildings.id, building_id))
+  // Calculate earned amount if not provided
+  let earned_amount = earnedAmount
+  
+  if (typeof earned_amount === 'undefined') {
+    const [building] = await db
+        .select()
+        .from(buildings)
+        .where(eq(buildings.id, buildingId))
 
-  if (!building) {
-    return json({ error: 'Building not found' }, { status: 404 })
+    if (!building) {
+        return json({ error: 'Building not found' }, { status: 404 })
+    }
+    earned_amount = status === 'completed' ? (building.price_per_clean || 0) : 0
   }
 
-  const earned_amount = status === 'completed' ? (building.price_per_clean || 0) : 0
-  
-  const start = dayjs(clean_start)
-  const end = clean_end ? dayjs(clean_end) : start.add(1, 'hour')
+  const start = dayjs(cleanStart)
+  const end = cleanEnd ? dayjs(cleanEnd) : start.add(1, 'hour')
 
   const [result] = await db.insert(cleaningLogs).values({
-    building_id,
+    building_id: buildingId,
     clean_start: start.toDate(),
     clean_end: end.toDate(),
     earned_amount,
@@ -54,21 +57,21 @@ export const GET = async ({ url, locals }) => {
   const logs = await db
     .select({
       id: cleaningLogs.id,
-      clean_start: cleaningLogs.clean_start,
-      clean_end: cleaningLogs.clean_end,
-      earned_amount: cleaningLogs.earned_amount,
+      cleanStart: cleaningLogs.clean_start,
+      cleanEnd: cleaningLogs.clean_end,
+      earnedAmount: cleaningLogs.earned_amount,
       status: cleaningLogs.status,
       building: {
         id: buildings.id,
         name: buildings.name,
         address: buildings.address,
-        price_per_clean: buildings.price_per_clean
+        pricePerClean: buildings.price_per_clean
       }
     })
     .from(cleaningLogs)
     .innerJoin(buildings, eq(cleaningLogs.building_id, buildings.id))
     .where(eq(buildings.user_id, locals.user.id))
-    .orderBy(desc(cleaningLogs.clean_start)) // clean_start is likely better than created_at for sorting logs
+    .orderBy(desc(cleaningLogs.clean_start))
     .limit(limit)
 
   return json(logs)

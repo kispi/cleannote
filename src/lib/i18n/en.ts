@@ -1,6 +1,6 @@
 export default {
   app: {
-    name: 'CleanQuest'
+    name: 'CleanNote'
   },
   intro: {
      slogan: 'The standard for cleaning revenue',
@@ -17,10 +17,18 @@ export default {
     other_quests: 'Other Buildings',
     no_quests: 'No cleaning scheduled for today.',
     completed: 'Completed',
-    pending: 'Pending'
+    pending: 'Pending',
+    recent_logs: 'Recent Cleaning Logs (20)',
+    no_logs_title: 'No logs yet',
+    no_logs_message: 'Add cleaning logs to manage your revenue!'
   },
   cleaning: {
-    add_record: 'Add Cleaning Record'
+    add_record: 'Add Cleaning Record',
+    edit_record: 'Edit Cleaning Record',
+    delete_confirm: {
+      title: 'Delete Record',
+      message: 'Are you sure you want to delete this cleaning record?\nThis action cannot be undone.'
+    }
   },
   nav: {
      home: 'Home',
@@ -51,6 +59,11 @@ export default {
   settings: {
     title: 'Settings',
     profile: 'Profile',
+    edit_profile: 'Edit Profile',
+    name: 'Name',
+    placeholder: {
+      name: 'Enter your name'
+    },
     language: 'Language',
     theme: 'Theme',
     backup: 'Data Backup / Export',

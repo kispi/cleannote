@@ -1,6 +1,6 @@
 export default {
   app: {
-    name: '클린퀘스트'
+    name: '클린노트'
   },
   intro: {
     slogan: '계단 청소 수익 관리의 정석',
@@ -13,7 +13,6 @@ export default {
   home: {
     greeting: '{name}님, 안녕하세요!',
     monthly_revenue: '이번 달 수익',
-    revenue: '이번 달 수익',
     today_quests: '오늘의 청소',
     other_quests: '그 외 건물',
     no_quests: '오늘 예정된 청소가 없습니다.',
@@ -25,9 +24,10 @@ export default {
   },
   cleaning: {
     add_record: '청소 기록 추가',
+    edit_record: '청소 기록 수정',
     delete_confirm: {
-        title: '기록 삭제',
-        message: '이 청소 기록을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'
+      title: '기록 삭제',
+      message: '이 청소 기록을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'
     }
   },
   nav: {
@@ -59,6 +59,11 @@ export default {
   settings: {
     title: '설정',
     profile: '프로필',
+    edit_profile: '프로필 수정',
+    name: '이름',
+    placeholder: {
+      name: '이름을 입력하세요'
+    },
     language: '언어',
     theme: '테마',
     backup: '데이터 백업',
@@ -70,7 +75,7 @@ export default {
     },
     language_options: {
         ko: '한국어',
-        en: 'English'
+        en: '영어'
     },
     logout_confirm: {
       title: '로그아웃',

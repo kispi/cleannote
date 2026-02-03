@@ -9,7 +9,14 @@ export const GET = async ({ locals }) => {
   }
 
   const data = await db
-    .select()
+    .select({
+      id: buildings.id,
+      name: buildings.name,
+      address: buildings.address,
+      pricePerClean: buildings.price_per_clean,
+      scheduledDays: buildings.scheduled_days,
+      createdAt: buildings.created_at
+    })
     .from(buildings)
     .where(and(eq(buildings.user_id, locals.user.id), isNull(buildings.deleted_at)))
     .orderBy(desc(buildings.created_at))
@@ -23,7 +30,7 @@ export const POST = async ({ request, locals }) => {
   }
 
   const body = await request.json()
-  const { name, address, price_per_clean, scheduled_days } = body
+  const { name, address, pricePerClean, scheduledDays } = body
 
   if (!name) {
     return json({ error: 'Name is required' }, { status: 400 })
@@ -33,12 +40,22 @@ export const POST = async ({ request, locals }) => {
     user_id: locals.user.id,
     name,
     address,
-    price_per_clean: price_per_clean || 0,
-    scheduled_days
+    price_per_clean: pricePerClean || 0,
+    scheduled_days: scheduledDays
   })
 
   // Fetch the created record to return it
-  const [created] = await db.select().from(buildings).where(eq(buildings.id, result.insertId))
+  const [created] = await db
+    .select({
+      id: buildings.id,
+      name: buildings.name,
+      address: buildings.address,
+      pricePerClean: buildings.price_per_clean,
+      scheduledDays: buildings.scheduled_days,
+      createdAt: buildings.created_at
+    })
+    .from(buildings)
+    .where(eq(buildings.id, result.insertId))
 
   return json(created, { status: 201 })
 }

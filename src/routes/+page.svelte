@@ -18,7 +18,7 @@
       class="text-4xl leading-tight font-extrabold tracking-tight text-gray-900"
       in:fly={{ y: 20, duration: 800, delay: 300 }}
     >
-      클린퀘스트<br />
+      클린노트<br />
       <span class="text-blue-600">수익이 한눈에</span>
     </h1>
 
@@ -34,13 +34,13 @@
     class="flex w-full max-w-xs items-center justify-center py-8"
     in:fade={{ duration: 1000, delay: 500 }}
   >
-    <div class="relative aspect-square w-64 rounded-3xl bg-gray-50 p-6 shadow-inner">
-      <div class="absolute inset-x-6 top-6 h-32 space-y-2 rounded-2xl bg-white p-4 shadow-lg">
+    <div class="relative aspect-square w-64 rounded-xl bg-gray-50 p-6 shadow-inner">
+      <div class="absolute inset-x-6 top-6 h-32 space-y-2 rounded-xl bg-white p-4 shadow-lg">
         <div class="h-4 w-1/2 rounded bg-gray-100"></div>
         <div class="h-4 w-3/4 rounded bg-gray-100"></div>
       </div>
       <div
-        class="absolute inset-x-6 bottom-6 flex h-16 items-center justify-center rounded-2xl bg-blue-500 font-bold text-white opacity-90 shadow-lg"
+        class="absolute inset-x-6 bottom-6 flex h-16 items-center justify-center rounded-xl bg-blue-500 font-bold text-white opacity-90 shadow-lg"
       >
         이번 달 +120만원
       </div>

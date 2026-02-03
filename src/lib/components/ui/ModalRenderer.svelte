@@ -21,7 +21,7 @@
 {#each ui.modal.items as item (item.id)}
   <!-- Backdrop -->
   <div
-    class="modal-renderer fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4 backdrop-blur-sm"
+    class="modal-renderer fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4 backdrop-blur-sm dark:bg-black/60"
     transition:fade={{ duration: 200 }}
     onclick={(e) => {
       if (e.target === e.currentTarget) handleBackdropClick(item)

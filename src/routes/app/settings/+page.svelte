@@ -4,6 +4,7 @@
   import { ui } from '$lib/store/ui.svelte'
   import { settings, type Theme, type Locale } from '$lib/store/settings.svelte'
   import ModalConfirm from '$lib/components/modals/ModalConfirm.svelte'
+  import ModalNameEdit from '$lib/components/modals/ModalNameEdit.svelte'
 
   let { data } = $props()
 
@@ -42,14 +43,23 @@
   </header>
 
   <!-- Profile Section -->
-  <div
-    class="border-base bg-base-100 mb-8 flex items-center gap-4 rounded-2xl border p-4 shadow-sm"
+  <button
+    class="card mb-8 flex w-full items-center gap-4 text-left transition-transform active:scale-[0.98]"
+    onclick={() =>
+      ui.modal.show({
+        component: ModalNameEdit,
+        props: { currentName: data.user.name }
+      })}
   >
     {#if data.user.avatar_url}
-      <img src={data.user.avatar_url} alt="Profile" class="h-14 w-14 rounded-full bg-gray-200" />
+      <img
+        src={data.user.avatar_url}
+        alt="Profile"
+        class="h-14 w-14 rounded-full bg-gray-200 dark:bg-gray-600"
+      />
     {:else}
       <div
-        class="bg-base-200 text-sub-content flex h-14 w-14 items-center justify-center rounded-full"
+        class="text-sub-content flex h-14 w-14 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-600"
       >
         <User />
       </div>
@@ -58,12 +68,15 @@
       <h2 class="text-base-content text-lg font-bold">{data.user.name}</h2>
       <p class="text-sub-content text-xs">{data.user.email || 'User'}</p>
     </div>
-  </div>
+    <div class="text-sub-content ml-auto">
+      <ChevronRight size={20} />
+    </div>
+  </button>
 
   <!-- Settings -->
   <div class="space-y-6">
     <!-- Theme -->
-    <div class="border-base bg-base-100 flex flex-col gap-3 rounded-xl border p-4 shadow-sm">
+    <div class="card flex flex-col gap-3">
       <div class="flex items-center gap-3">
         <div
           class="bg-base-200 text-sub-content flex h-8 w-8 items-center justify-center rounded-full"
@@ -72,7 +85,7 @@
         </div>
         <span class="text-base-content font-medium">{t('settings.theme')}</span>
       </div>
-      <div class="bg-base-200 flex rounded-lg p-1">
+      <div class="bg-base-200 flex gap-1 rounded-lg p-1">
         {#each themes as theme}
           <button
             type="button"
@@ -89,7 +102,7 @@
     </div>
 
     <!-- Language -->
-    <div class="border-base bg-base-100 flex flex-col gap-3 rounded-xl border p-4 shadow-sm">
+    <div class="card flex flex-col gap-3">
       <div class="flex items-center gap-3">
         <div
           class="bg-base-200 text-sub-content flex h-8 w-8 items-center justify-center rounded-full"
@@ -98,7 +111,7 @@
         </div>
         <span class="text-base-content font-medium">{t('settings.language')}</span>
       </div>
-      <div class="bg-base-200 flex rounded-lg p-1">
+      <div class="bg-base-200 flex gap-1 rounded-lg p-1">
         {#each locales as locale}
           <button
             type="button"
@@ -117,13 +130,13 @@
     <!-- Other Links -->
     <div class="space-y-3">
       <button
-        class="border-base bg-base-100 hover:bg-base-200 flex w-full items-center justify-between rounded-xl border p-4 shadow-sm transition-all active:scale-[0.98] dark:hover:bg-gray-800"
+        class="card flex w-full items-center justify-between transition-all active:scale-[0.98]"
       >
         <span class="text-base-content font-medium">{t('settings.backup')}</span>
         <ChevronRight size={18} class="text-sub-content" />
       </button>
       <button
-        class="border-base bg-base-100 hover:bg-base-200 flex w-full items-center justify-between rounded-xl border p-4 shadow-sm transition-all active:scale-[0.98] dark:hover:bg-gray-800"
+        class="card flex w-full items-center justify-between transition-all active:scale-[0.98]"
       >
         <span class="text-base-content font-medium">{t('settings.terms')}</span>
         <ChevronRight size={18} class="text-sub-content" />

@@ -55,3 +55,29 @@ export const useDeleteCleaningLog = () => {
     }
   }))
 }
+
+export const useUpdateCleaningLog = () => {
+  const queryClient = useQueryClient()
+
+  return createMutation(() => ({
+    mutationFn: async (data: any) => {
+      const { id, ...body } = data
+      const res = await fetch(`/api/cleaning-logs/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+      if (!res.ok) throw new Error()
+      return res.json()
+    },
+    onSuccess: () => {
+        ui.toast.show({ text: t('common.toast.saved'), type: 'success' })
+        ui.modal.close()
+        queryClient.invalidateQueries({ queryKey: ['cleaning-logs'] })
+        queryClient.invalidateQueries({ queryKey: ['revenue'] })
+    },
+    onError: () => {
+      ui.toast.show({ text: t('common.toast.error'), type: 'error' })
+    }
+  }))
+}

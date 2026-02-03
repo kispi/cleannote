@@ -25,7 +25,7 @@ const createToastState = () => {
   return {
     get items() { return items },
     set items(v) { items = v },
-    show: ({ text, type = 'info', duration = 3000, position = 'bottom-center' }: { text: string; type?: 'success' | 'error' | 'info'; duration?: number; position?: 'top-center' | 'bottom-center' }) => {
+    show: ({ text, type = 'info', duration = 3000, position = 'top-center' }: { text: string; type?: 'success' | 'error' | 'info'; duration?: number; position?: 'top-center' | 'bottom-center' }) => {
       const id = crypto.randomUUID()
       items.push({ id, text, type, position })
       setTimeout(() => {
