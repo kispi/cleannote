@@ -32,6 +32,8 @@
         return {
           value: b.id,
           label: b.name,
+          address: b.address,
+          price: b.price_per_clean,
           isToday
         }
       })
@@ -67,15 +69,15 @@
   }
 </script>
 
-<div class="modal-cleaning-add relative w-full p-6">
+<div class="modal-cleaning-add bg-base-100 relative w-full p-6">
   <div class="mb-6 flex items-center justify-between">
-    <h2 class="text-xl font-bold text-gray-900">
+    <h2 class="text-base-content text-xl font-bold">
       {t('cleaning.add_record')}
     </h2>
     <button
       type="button"
       onclick={() => ui.modal.close()}
-      class="cursor-pointer p-1 text-gray-400 hover:text-gray-600"
+      class="text-sub-content hover:text-base-content cursor-pointer p-1"
     >
       <X />
     </button>
@@ -91,16 +93,25 @@
         placeholder={t('building.name')}
       >
         {#snippet renderOption(opt)}
-          <div class="flex w-full items-center justify-between">
-            <span class="font-medium text-gray-700 dark:text-gray-200">{opt.label}</span>
-            {#if opt.isToday}
-              <span
-                class="flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-600 dark:bg-blue-900 dark:text-blue-300"
-              >
-                <Sparkles size={10} />
-                TODAY
-              </span>
-            {/if}
+          <div class="flex w-full flex-col items-start gap-1 py-1">
+            <div class="flex w-full items-center justify-between">
+              <span class="font-medium text-gray-700 dark:text-gray-200">{opt.label}</span>
+              {#if opt.isToday}
+                <span
+                  class="flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-600 dark:bg-blue-900 dark:text-blue-300"
+                >
+                  <Sparkles size={10} />
+                  TODAY
+                </span>
+              {/if}
+            </div>
+
+            <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+              <span>{opt.address || t('building.placeholder.address')}</span>
+              {#if opt.price}
+                <span>• {opt.price.toLocaleString()}{t('common.unit_won')}</span>
+              {/if}
+            </div>
           </div>
         {/snippet}
       </Dropdown>

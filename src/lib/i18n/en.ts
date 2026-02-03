@@ -12,8 +12,8 @@ export default {
   },
   home: {
     greeting: 'Hello, {name}!',
-    revenue: 'This Month Revenue',
-    today_quests: "Today's Quests",
+    monthly_revenue: 'This Month Revenue',
+    today_quests: `Today's Quests`,
     other_quests: 'Other Buildings',
     no_quests: 'No cleaning scheduled for today.',
     completed: 'Completed',
@@ -56,6 +56,11 @@ export default {
     backup: 'Data Backup / Export',
     terms: 'Terms of Service',
     logout: 'Log Out',
+    logout_confirm: {
+      title: 'Log Out',
+      message: 'Are you sure you want to log out?',
+      confirm: 'Log Out'
+    },
     theme_options: {
         light: 'Light Mode',
         dark: 'Dark Mode'

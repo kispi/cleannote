@@ -72,22 +72,29 @@
 
 <div class="p-6 pb-24">
   <!-- Header -->
-  <header class="mb-8 pt-4">
-    <div class="mb-1 text-lg font-medium text-gray-500 dark:text-gray-400">
-      {t('home.greeting', { name: data.user?.name || 'User' })}
-    </div>
-    <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400">{t('home.revenue')}</h2>
-    <div class="mt-1 flex items-baseline gap-1">
-      <span class="text-4xl font-extrabold text-gray-900 dark:text-white">
-        {revenueQuery.data?.totalAmount?.toLocaleString() || 0}
-      </span>
-      <span class="text-xl font-bold text-gray-500 dark:text-gray-400">{t('common.unit_won')}</span>
+  <header class="mb-6">
+    <div class="flex items-start justify-between">
+      <div>
+        <h1 class="text-base-content text-2xl font-bold">
+          {t('home.greeting', { name: data.user.name })}
+        </h1>
+        <p class="text-sub-content mt-1">
+          {dayjs().format('YYYY.MM.DD dddd')}
+        </p>
+      </div>
+      <!-- Stats (Simple for now) -->
+      <div class="text-right">
+        <p class="text-sub-content text-xs">{t('home.monthly_revenue')}</p>
+        <p class="text-xl font-bold text-blue-600 dark:text-blue-400">
+          {(revenueQuery.data?.totalAmount || 0).toLocaleString()}{t('common.unit_won')}
+        </p>
+      </div>
     </div>
   </header>
 
   <!-- Add Record Action -->
   <button
-    class="mb-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 p-4 font-bold text-white shadow-lg shadow-blue-200 transition-transform active:scale-[0.98] dark:bg-blue-600 dark:shadow-none"
+    class="btn-primary mb-8 w-full rounded-2xl shadow-lg active:scale-[0.98] dark:shadow-none"
     onclick={() =>
       ui.modal.show(
         ModalCleaningAdd,
@@ -100,37 +107,47 @@
   </button>
 
   <!-- Section: Today's Quests -->
-  <section class="mb-8">
+  <section>
     <div class="mb-4 flex items-center justify-between">
-      <h3 class="text-xl font-bold text-gray-900 dark:text-white">{t('home.today_quests')}</h3>
-      <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
-        {todayQuests.filter((q: any) => q.status === 'completed').length} / {todayQuests.length}
+      <h3 class="text-base-content text-lg font-bold">{t('home.today_quests')}</h3>
+      <span class="bg-base-200 text-sub-content rounded-full px-3 py-1 text-xs font-bold">
+        {questsQuery.data?.filter((q: any) => q.status === 'completed').length || 0} / {questsQuery
+          .data?.length || 0}
       </span>
     </div>
 
-    <div class="space-y-3">
-      {#if questsQuery.isLoading}
-        <div class="animate-pulse py-12 text-center text-gray-400">Loading...</div>
-      {:else if todayQuests.length === 0}
+    {#if questsQuery.isLoading}
+      <div class="space-y-3">
+        {#each Array(3) as _}
+          <div class="bg-base-200 h-20 w-full animate-pulse rounded-xl"></div>
+        {/each}
+      </div>
+    {:else if questsQuery.data?.length === 0}
+      <div
+        class="bg-base-200 flex flex-col items-center justify-center rounded-2xl border border-gray-100 py-12 text-center dark:border-gray-800"
+      >
         <div
-          class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 py-8 text-center text-gray-400 dark:border-gray-700"
+          class="mb-3 rounded-full bg-blue-100 p-4 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
         >
-          <Trophy class="mb-2 h-8 w-8 opacity-30" />
-          <p class="text-sm">{t('home.no_quests')}</p>
+          <CheckCircle2 size={32} />
         </div>
-      {:else}
+        <p class="text-base-content font-bold">{t('home.no_quests_title')}</p>
+        <p class="text-sub-content text-sm">{t('home.no_quests_message')}</p>
+      </div>
+    {:else}
+      <div class="space-y-3">
         {#each todayQuests as quest (quest.building.id)}
           {@render questItem(quest)}
         {/each}
-      {/if}
-    </div>
+      </div>
+    {/if}
   </section>
 
   <!-- Section: Other Buildings -->
   {#if otherQuests.length > 0}
-    <section>
+    <section class="mt-8">
       <div class="mb-4 flex items-center justify-between">
-        <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200">
+        <h3 class="text-base-content text-lg font-bold">
           {t('home.other_quests') || '그 외 건물'}
         </h3>
       </div>
@@ -162,6 +179,9 @@
       </h4>
       <p class="text-sm text-gray-500 dark:text-gray-400">
         {quest.building.address || ''}
+        {#if quest.building.price_per_clean}
+          • {quest.building.price_per_clean.toLocaleString()}{t('common.unit_won')}
+        {/if}
       </p>
     </div>
 

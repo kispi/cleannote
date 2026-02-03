@@ -26,9 +26,9 @@
   }
 </script>
 
-<div class="modal-confirm w-full rounded-2xl bg-white p-6 shadow-xl">
-  <h3 class="mb-2 text-xl font-bold text-gray-900">{title}</h3>
-  <p class="mb-6 text-sm text-gray-500">{message}</p>
+<div class="modal-confirm bg-base-100 w-full rounded-2xl p-6 shadow-xl">
+  <h3 class="text-base-content mb-2 text-xl font-bold">{title}</h3>
+  <p class="text-sub-content mb-6 text-sm">{message}</p>
 
   <div class="flex gap-3">
     <button class="btn-default flex-1" onclick={() => ui.modal.close()}>

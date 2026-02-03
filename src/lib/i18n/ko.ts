@@ -12,6 +12,7 @@ export default {
   },
   home: {
     greeting: '{name}님, 안녕하세요!',
+    monthly_revenue: '이번 달 수익',
     revenue: '이번 달 수익',
     today_quests: '오늘의 청소',
     other_quests: '그 외 건물',
@@ -53,16 +54,21 @@ export default {
     profile: '프로필',
     language: '언어',
     theme: '테마',
-    backup: '데이터 백업 / 내보내기',
+    backup: '데이터 백업',
     terms: '이용약관',
     logout: '로그아웃',
     theme_options: {
-        light: '라이트 모드',
-        dark: '다크 모드'
+        light: '라이트',
+        dark: '다크'
     },
     language_options: {
         ko: '한국어',
         en: 'English'
+    },
+    logout_confirm: {
+      title: '로그아웃',
+      message: '정말 로그아웃 하시겠습니까?',
+      confirm: '로그아웃'
     }
   },
   common: {

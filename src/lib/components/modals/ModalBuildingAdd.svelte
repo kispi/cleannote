@@ -118,15 +118,15 @@
   }
 </script>
 
-<div class="modal-building-add relative w-full p-6">
+<div class="modal-building-add bg-base-100 relative w-full p-6">
   <div class="mb-6 flex items-center justify-between">
-    <h2 class="text-xl font-bold text-gray-900">
+    <h2 class="text-base-content text-xl font-bold">
       {building ? t('building.edit') : t('building.add')}
     </h2>
     <button
       type="button"
       onclick={() => ui.modal.close()}
-      class="cursor-pointer p-1 text-gray-400 hover:text-gray-600"
+      class="text-sub-content hover:text-base-content cursor-pointer p-1"
     >
       <X />
     </button>
@@ -134,39 +134,51 @@
 
   <form onsubmit={handleSubmit} class="space-y-4">
     <div>
-      <label class="mb-1 block text-sm font-medium text-gray-700">{t('building.name')}</label>
+      <label class="text-base-content mb-1 block text-sm font-medium">{t('building.name')}</label>
       <input
         type="text"
         bind:value={name}
         placeholder={t('building.placeholder.name')}
-        class="w-full rounded-xl border border-gray-200 px-4 py-3 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+        class="border-base bg-base-100 text-base-content placeholder:text-sub-content w-full rounded-xl border px-4 py-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
       />
     </div>
 
     <div>
-      <label class="mb-1 block text-sm font-medium text-gray-700">{t('building.address')}</label>
+      <label class="text-base-content mb-1 block text-sm font-medium">{t('building.address')}</label
+      >
       <input
         type="text"
         bind:value={address}
         placeholder={t('building.placeholder.address')}
-        class="w-full rounded-xl border border-gray-200 px-4 py-3 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+        class="border-base bg-base-100 text-base-content placeholder:text-sub-content w-full rounded-xl border px-4 py-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
       />
     </div>
 
     <div>
-      <label class="mb-1 block text-sm font-medium text-gray-700">{t('building.price')}</label>
+      <label class="text-base-content mb-1 block text-sm font-medium">{t('building.price')}</label>
       <div class="relative">
         <input
           type="number"
           bind:value={price}
-          class="w-full rounded-xl border border-gray-200 px-4 py-3 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+          class="border-base bg-base-100 text-base-content placeholder:text-sub-content w-full rounded-xl border px-4 py-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
         />
-        <span class="absolute top-3.5 right-4 text-gray-500">{t('common.unit_won')}</span>
+        <span class="text-sub-content absolute top-3.5 right-4">{t('common.unit_won')}</span>
+      </div>
+      <div class="mt-2 flex gap-2 overflow-x-auto">
+        {#each [10000, 50000, 100000] as amount}
+          <button
+            type="button"
+            onclick={() => (price += amount)}
+            class="bg-base-200 text-sub-content rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            +{amount.toLocaleString()}
+          </button>
+        {/each}
       </div>
     </div>
 
     <div>
-      <label class="mb-2 block text-sm font-medium text-gray-700">{t('building.days')}</label>
+      <label class="text-base-content mb-2 block text-sm font-medium">{t('building.days')}</label>
       <div class="flex flex-wrap gap-2">
         {#each dayOptions as d}
           <button
@@ -176,7 +188,7 @@
               d.value
             )
               ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-500'}"
+              : 'bg-base-200 text-sub-content'}"
           >
             {d.label}
           </button>

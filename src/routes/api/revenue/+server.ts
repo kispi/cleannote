@@ -16,9 +16,11 @@ export const GET = async ({ url, locals }) => {
   // We need to join with buildings to ensure it belongs to user
   // cleaning_logs -> buildings -> users
   
+  console.log('[Revenue API] Params:', { monthStr, userId: locals.user.id })
+  
   const result = await db
     .select({
-      totalAmount: sql<number>`sum(${cleaningLogs.earned_amount})`,
+      totalAmount: sql<number>`COALESCE(sum(${cleaningLogs.earned_amount}), 0)`,
       completedCount: sql<number>`count(${cleaningLogs.id})`
     })
     .from(cleaningLogs)
@@ -31,6 +33,8 @@ export const GET = async ({ url, locals }) => {
         eq(cleaningLogs.status, 'completed')
       )
     )
+
+  console.log('[Revenue API] Result:', result)
 
   const stats = result[0] || { totalAmount: 0, completedCount: 0 }
 

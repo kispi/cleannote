@@ -18,6 +18,16 @@
 *   **Backend:** SvelteKit API Routes (Node.js)
 *   **Database:** MySQL, Drizzle ORM
 *   **Utilities:** Day.js, TanStack Query
+*   **Internationalization (i18n):** Supports Korean (ko) and English (en).
+
+## Roadmap
+- [ ] **Cleaning Log Calendar Dashboard**: Visualize cleaning history in a calendar view.
+- [ ] **Kakao Map API**: Use Kakao Map API to find correct building geometry.
+- [ ] **Advanced Statistics**: Detailed revenue and performance charts.
+- [ ] **User Roles**: Admin vs Cleaner roles.
+
+## License
+MIT
 
 ## 📏 Coding Standards
 *   **Functions:** Always use **Arrow Functions** (`const func = () => {}`). Avoid `function` keyword and `this`.

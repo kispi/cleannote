@@ -39,7 +39,7 @@ export const GET = async ({ url, locals }) => {
     
     let is_scheduled = false
     if (b.scheduled_days) {
-      const days = b.scheduled_days.split(',').map(Number)
+      const days = b.scheduled_days.split(',').filter(s => s.trim() !== '').map(Number)
       if (days.includes(dayOfWeek)) is_scheduled = true
     }
 

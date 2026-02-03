@@ -55,27 +55,27 @@
 <div class="{className} relative" use:clickOutsideAction>
   <button
     type="button"
-    class="flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 text-left transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none active:scale-[0.99] dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+    class="border-base bg-base-100 focus:ring-primary flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition-all focus:border-blue-500 focus:ring-1 focus:outline-none active:scale-[0.99]"
     onclick={toggle}
   >
-    <span class={!value ? 'text-gray-400' : 'text-gray-900 dark:text-white'}>
+    <span class={!value ? 'text-sub-content' : 'text-base-content'}>
       {selectedLabel}
     </span>
     <ChevronDown
       size={18}
-      class="text-gray-400 transition-transform {isOpen ? 'rotate-180' : ''}"
+      class="transition-transform {isOpen ? 'rotate-180' : ''} text-sub-content"
     />
   </button>
 
   {#if isOpen}
     <div
-      class="absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-auto rounded-xl border border-gray-100 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
+      class="border-base bg-base-100 absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-auto rounded-xl border shadow-xl"
       transition:slide={{ duration: 150 }}
     >
       {#each options as opt}
         <button
           type="button"
-          class="flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 {value ===
+          class="text-base-content flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 {value ===
           opt.value
             ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
             : ''}"
@@ -94,7 +94,7 @@
       {/each}
 
       {#if options.length === 0}
-        <div class="px-4 py-3 text-sm text-gray-400">No options</div>
+        <div class="text-sub-content px-4 py-3 text-sm">No options</div>
       {/if}
     </div>
   {/if}
