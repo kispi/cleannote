@@ -26,6 +26,7 @@ trigger: always_on
   - **Server:** TanStack Query.
   - **Client:** Svelte 5 Runes.
 - **Dependencies:** Minimize 3rd-party libraries. Use native web APIs where possible.
+- **Functional Programming:** Avoid using Classes. Use simple functions or factory functions with closures for state management and logic.
 
 ## 3. Database Modeling (Drizzle ORM)
 
@@ -48,7 +49,14 @@ trigger: always_on
   - `POST`: Create
   - `PUT`: Update (Full/Partial)
   - `DELETE`: Soft Delete action
+- **Endpoints:** Noun-based only (e.g., `/api/buildings`). NO verbs in URLs.
+- **Methods:**
+  - `GET`: Read
+  - `POST`: Create
+  - `PUT`: Update (Full/Partial)
+  - `DELETE`: Soft Delete action
 - **Response:** JSON format.
+- **Architecture:** Do NOT use SvelteKit Server Actions (`?/action`). All mutations MUST be done via client-side `fetch` calls to these REST API endpoints.
 
 ## 5. UI Components & Patterns
 
@@ -59,6 +67,21 @@ trigger: always_on
   - **Path:** All modal components must be in `@/lib/components/modals/`.
   - **Naming:** Must start with `Modal` (e.g., `ModalBuildingAdd.svelte`).
 - **Optimistic UI:** Implement only when requested or critical for perceived performance.
+- **Component Class Naming:** ALL components must have a root-level class name corresponding to their filename in `dash-case` (e.g., `LoginButton.svelte` -> `class="login-button"`).
+- **Responsive Breakpoints:** Use standard Tailwind breakpoints.
+  - `sm`: 640px
+  - `md`: 768px
+  - `lg`: 1024px
+  - `xl`: 1280px
+  - App should utilize full screen on desktop, not limited to mobile view.
+- **Button Styling:**
+  - Use `.btn-default` (Gray/Secondary) and `.btn-primary` (Brand Color) classes defined in global CSS.
+  - Avoid ad-hoc Tailwind utility strings for buttons (e.g. `bg-blue-600 rounded-xl ...`).
+- **Internationalization (i18n):**
+  - Use structured JSON objects for translation keys (e.g. `building: { add: "..." }`).
+  - NEVER hardcode locale checks in templates (e.g. `locale === 'ko' ?`). Always use translation keys.
+- **Formatting:**
+  - Always use 2-space indentation for all new files.
 
 ## 6. Directory Structure
 

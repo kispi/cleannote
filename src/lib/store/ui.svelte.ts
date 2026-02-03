@@ -1,30 +1,41 @@
 import type { Component } from 'svelte'
 
-class ModalState {
-    active = $state<{ component: Component; props: any } | null>(null)
+const createModalState = () => {
+  let items = $state<{ id: string; component: Component<any>; props: any; options?: { preventCloseOnClickBackdrop?: boolean } }[]>([])
 
-    show(component: Component, props: any = {}) {
-        this.active = { component, props }
+  return {
+    get items() { return items },
+    show: (component: Component<any>, props: any = {}, options: { preventCloseOnClickBackdrop?: boolean } = {}) => {
+      items.push({ 
+        id: crypto.randomUUID(), 
+        component, 
+        props, 
+        options 
+      })
+    },
+    close: () => {
+      items.pop()
     }
-
-    close() {
-        this.active = null
-    }
+  }
 }
 
-class ToastState {
-    items = $state<{ id: string; text: string; type: 'success' | 'error' | 'info' }[]>([])
+const createToastState = () => {
+  let items = $state<{ id: string; text: string; type: 'success' | 'error' | 'info' }[]>([])
 
-    show(text: string, type: 'success' | 'error' | 'info' = 'info') {
-        const id = crypto.randomUUID()
-        this.items.push({ id, text, type })
-        setTimeout(() => {
-            this.items = this.items.filter((i) => i.id !== id)
-        }, 3000)
+  return {
+    get items() { return items },
+    set items(v) { items = v }, // Allow direct assignment if needed (e.g. filtering)
+    show: (text: string, type: 'success' | 'error' | 'info' = 'info') => {
+      const id = crypto.randomUUID()
+      items.push({ id, text, type })
+      setTimeout(() => {
+        items = items.filter((i) => i.id !== id)
+      }, 3000)
     }
+  }
 }
 
 export const ui = {
-    modal: new ModalState(),
-    toast: new ToastState()
+  modal: createModalState(),
+  toast: createToastState()
 }

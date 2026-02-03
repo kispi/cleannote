@@ -6,7 +6,7 @@ import { type RequestEvent } from '@sveltejs/kit'
 const SESSION_COOKIE_NAME = 'auth_session'
 const ONE_WEEK_MS = 1000 * 60 * 60 * 24 * 7
 
-export async function createSession(userId: number) {
+export const createSession = async (userId: number) => {
   const sessionToken = crypto.randomUUID()
   const expiresAt = new Date(Date.now() + ONE_WEEK_MS)
 
@@ -19,7 +19,7 @@ export async function createSession(userId: number) {
   return { sessionToken, expiresAt }
 }
 
-export async function validateSession(token: string) {
+export const validateSession = async (token: string) => {
   const [session] = await db
     .select({
       user: users,
@@ -41,11 +41,11 @@ export async function validateSession(token: string) {
   return session
 }
 
-export async function invalidateSession(token: string) {
+export const invalidateSession = async (token: string) => {
   await db.delete(sessions).where(eq(sessions.session_token, token))
 }
 
-export function setSessionCookie(event: RequestEvent, token: string, expires: Date) {
+export const setSessionCookie = (event: RequestEvent, token: string, expires: Date) => {
   event.cookies.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
     path: '/',
@@ -55,6 +55,6 @@ export function setSessionCookie(event: RequestEvent, token: string, expires: Da
   })
 }
 
-export function deleteSessionCookie(event: RequestEvent) {
+export const deleteSessionCookie = (event: RequestEvent) => {
   event.cookies.delete(SESSION_COOKIE_NAME, { path: '/' })
 }

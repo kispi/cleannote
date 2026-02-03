@@ -6,7 +6,8 @@ import {
   text,
   int,
   boolean,
-  mysqlEnum
+  mysqlEnum,
+  double
 } from 'drizzle-orm/mysql-core'
 import { sql } from 'drizzle-orm'
 
@@ -62,6 +63,8 @@ export const buildings = mysqlTable('buildings', {
     .references(() => users.id),
   name: varchar('name', { length: 255 }).notNull(),
   address: text('address'),
+  latitude: double('latitude'),
+  longitude: double('longitude'),
   price_per_clean: int('price_per_clean').default(0),
   scheduled_days: varchar('scheduled_days', { length: 255 }), // e.g. "Mon,Wed,Fri"
   memo: text('memo')

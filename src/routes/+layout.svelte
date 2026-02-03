@@ -18,7 +18,7 @@
 <QueryClientProvider client={queryClient}>
   <!-- Mobile-first container -->
   <div class="min-h-screen bg-gray-50 font-sans text-gray-900 antialiased">
-    <main class="relative mx-auto min-h-screen w-full max-w-md bg-white shadow-sm">
+    <main class="relative mx-auto min-h-screen w-full max-w-7xl bg-white shadow-sm sm:px-6 lg:px-8">
       <slot />
     </main>
     <ModalRenderer />

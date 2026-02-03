@@ -3,7 +3,7 @@
   import { fly } from 'svelte/transition'
   import { Check, AlertCircle, Info, X } from 'lucide-svelte'
 
-  function getIcon(type: 'success' | 'error' | 'info') {
+  const getIcon = (type: 'success' | 'error' | 'info') => {
     switch (type) {
       case 'success':
         return Check
@@ -14,7 +14,7 @@
     }
   }
 
-  function getColor(type: 'success' | 'error' | 'info') {
+  const getColor = (type: 'success' | 'error' | 'info') => {
     switch (type) {
       case 'success':
         return 'bg-green-500'

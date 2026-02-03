@@ -1,1 +1,26 @@
 @import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+@layer components {
+  .btn-base,
+  .btn-primary,
+  .btn-default,
+  .btn-danger {
+    @apply flex items-center justify-center gap-2 rounded-xl px-4 py-3 font-bold transition-transform active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer;
+  }
+  
+  .btn-primary {
+    @apply bg-blue-600 text-white shadow-lg shadow-blue-200 hover:bg-blue-700;
+  }
+
+  .btn-default {
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+  }
+
+  .btn-danger {
+    @apply bg-red-50 text-red-500 hover:bg-red-100;
+  }
+}

@@ -19,6 +19,10 @@
 *   **Database:** MySQL, Drizzle ORM
 *   **Utilities:** Day.js, TanStack Query
 
+## 📏 Coding Standards
+*   **Functions:** Always use **Arrow Functions** (`const func = () => {}`). Avoid `function` keyword and `this`.
+
+
 ## 🚀 Getting Started
 
 ### Prerequisites
