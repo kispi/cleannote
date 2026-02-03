@@ -26,6 +26,6 @@ echo "🏗️ Building project..."
 npm run build
 
 echo "🔄 Restarting application with PM2..."
-pm2 restart cleanquest || pm2 start build/index.js --name cleanquest --node-args="-r dotenv/config"
+pm2 restart cleanquest || pm2 start npm --name "cleanquest" -- run start
 
 echo "✅ Deployment finished successfully!"
