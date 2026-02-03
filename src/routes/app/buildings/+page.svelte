@@ -9,8 +9,8 @@
 
 <div class="relative min-h-[calc(100vh-80px)] p-6">
   <header class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">{$t('building.manage')}</h1>
-    <p class="text-sm text-gray-500">{$t('building.total', { count: data.buildings.length })}</p>
+    <h1 class="text-2xl font-bold text-gray-900">{t('building.manage')}</h1>
+    <p class="text-sm text-gray-500">{t('building.total', { count: data.buildings.length })}</p>
   </header>
 
   <div class="space-y-4 pb-24">
@@ -23,7 +23,7 @@
         <div class="mb-2 flex items-start justify-between">
           <h3 class="text-lg font-bold">{building.name}</h3>
           <span class="text-sm font-bold text-blue-600">
-            {building.price_per_clean ? building.price_per_clean.toLocaleString() : 0}{$t(
+            {building.price_per_clean ? building.price_per_clean.toLocaleString() : 0}{t(
               'common.unit_won'
             )}
           </span>
@@ -31,17 +31,17 @@
         {#if building.scheduled_days}
           <div class="mb-3 flex flex-wrap gap-1 text-xs text-gray-500">
             {#each building.scheduled_days.split(',') as day}
-              <span class="rounded bg-gray-100 px-2 py-1">{$t(`building.days_option.${day}`)}</span>
+              <span class="rounded bg-gray-100 px-2 py-1">{t(`building.days_option.${day}`)}</span>
             {/each}
           </div>
         {/if}
         <p class="truncate text-xs text-gray-400">
-          {building.address || $t('building.placeholder.address')}
+          {building.address || t('building.placeholder.address')}
         </p>
       </button>
     {:else}
       <div class="text-center py-12 text-gray-400">
-        {$t('building.total', { count: 0 })}
+        {t('building.total', { count: 0 })}
       </div>
     {/each}
   </div>

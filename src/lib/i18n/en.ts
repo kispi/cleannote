@@ -10,6 +10,15 @@ export default {
   login: {
      kakao: 'Start with Kakao in 3s'
   },
+  home: {
+    greeting: 'Hello, {name}!',
+    revenue: 'This Month Revenue',
+    today_quests: "Today's Quests",
+    other_quests: 'Other Buildings',
+    no_quests: 'No cleaning scheduled for today.',
+    completed: 'Completed',
+    pending: 'Pending'
+  },
   nav: {
      home: 'Home',
      buildings: 'Buildings',
@@ -35,6 +44,23 @@ export default {
          title: 'Delete Building',
          message: 'Are you sure you want to delete this building?\nThis action cannot be undone.'
      }
+  },
+  settings: {
+    title: 'Settings',
+    profile: 'Profile',
+    language: 'Language',
+    theme: 'Theme',
+    backup: 'Data Backup / Export',
+    terms: 'Terms of Service',
+    logout: 'Log Out',
+    theme_options: {
+        light: 'Light Mode',
+        dark: 'Dark Mode'
+    },
+    language_options: {
+        ko: 'Korean',
+        en: 'English'
+    }
   },
   common: {
      save: 'Save',

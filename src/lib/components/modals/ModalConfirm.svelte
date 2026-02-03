@@ -1,5 +1,6 @@
 <script lang="ts">
   import { ui } from '$lib/store/ui.svelte'
+  import { t } from '$lib/i18n'
 
   interface Props {
     title: string
@@ -13,8 +14,8 @@
   let {
     title,
     message,
-    confirmText = '확인',
-    cancelText = '취소',
+    confirmText = t('common.confirm'),
+    cancelText = t('common.cancel'),
     isDanger = false,
     onConfirm
   }: Props = $props()

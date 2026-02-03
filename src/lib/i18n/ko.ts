@@ -10,6 +10,15 @@ export default {
   login: {
     kakao: '카카오로 3초만에 시작하기'
   },
+  home: {
+    greeting: '{name}님, 안녕하세요!',
+    revenue: '이번 달 수익',
+    today_quests: '오늘의 청소',
+    other_quests: '그 외 건물',
+    no_quests: '오늘 예정된 청소가 없습니다.',
+    completed: '완료',
+    pending: '대기'
+  },
   nav: {
     home: '홈',
     buildings: '건물',
@@ -34,6 +43,23 @@ export default {
     confirm_delete: {
         title: '건물 삭제',
         message: '정말 이 건물을 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.'
+    }
+  },
+  settings: {
+    title: '설정',
+    profile: '프로필',
+    language: '언어',
+    theme: '테마',
+    backup: '데이터 백업 / 내보내기',
+    terms: '이용약관',
+    logout: '로그아웃',
+    theme_options: {
+        light: '라이트 모드',
+        dark: '다크 모드'
+    },
+    language_options: {
+        ko: '한국어',
+        en: 'English'
     }
   },
   common: {

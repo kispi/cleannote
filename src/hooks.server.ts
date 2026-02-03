@@ -10,12 +10,18 @@ export const handle: Handle = async ({ event, resolve }) => {
     return resolve(event)
   }
 
-  const result = await validateSession(sessionToken)
+  try {
+    const result = await validateSession(sessionToken)
 
-  if (result) {
-    event.locals.user = result.user
-    event.locals.session = result.session
-  } else {
+    if (result) {
+      event.locals.user = result.user
+      event.locals.session = result.session
+    } else {
+      event.locals.user = null
+      event.locals.session = null
+    }
+  } catch (err) {
+    console.error('Session validation error:', err)
     event.locals.user = null
     event.locals.session = null
   }

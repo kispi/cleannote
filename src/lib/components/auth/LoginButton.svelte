@@ -19,5 +19,5 @@
   class="login-button flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl bg-[#FEE500] px-6 py-4 text-black transition-transform active:scale-95"
 >
   <MessageCircle class="h-6 w-6 fill-black" />
-  <span class="text-lg font-bold">{$t('login.kakao')}</span>
+  <span class="text-lg font-bold">{t('login.kakao')}</span>
 </button>
