@@ -78,40 +78,44 @@
     })
 
     if (res.ok) {
-      ui.toast.show(building ? t('common.toast.saved') : t('common.toast.added'), 'success')
+      ui.toast.show({
+        text: building ? t('common.toast.saved') : t('common.toast.added'),
+        type: 'success'
+      })
       ui.modal.close()
       invalidateAll()
       queryClient.invalidateQueries({ queryKey: ['quests'] })
       queryClient.invalidateQueries({ queryKey: ['revenue'] })
     } else {
-      ui.toast.show(t('common.toast.error'), 'error')
+      ui.toast.show({ text: t('common.toast.error'), type: 'error' })
     }
   }
 
   const onDeleteClick = () => {
     if (!building) return
 
-    ui.modal.show(ModalConfirm, {
-      title: t('building.confirm_delete.title'),
-      message: t('building.confirm_delete.message'),
-      confirmText: t('common.delete'),
-      cancelText: t('common.cancel'),
-      isDanger: true,
-      onConfirm: async () => {
-        const res = await fetch(`/api/buildings/${building.id}`, {
-          method: 'DELETE'
-        })
+    ui.modal.show({
+      component: ModalConfirm,
+      props: {
+        title: t('building.confirm_delete.title'),
+        message: t('building.confirm_delete.message'),
+        confirmText: t('common.delete'),
+        cancelText: t('common.cancel'),
+        isDanger: true,
+        onConfirm: async () => {
+          const res = await fetch(`/api/buildings/${building.id}`, {
+            method: 'DELETE'
+          })
 
-        if (res.ok) {
-          ui.toast.show(t('common.toast.deleted'), 'success')
-          ui.modal.close() // Close the confirm modal will happen inside confirm
-          // We need to verify modal stack logic if generic close is enough
-          // But here we rely on invalidateAll mostly
-          invalidateAll()
-          queryClient.invalidateQueries({ queryKey: ['quests'] })
-          queryClient.invalidateQueries({ queryKey: ['revenue'] })
-        } else {
-          ui.toast.show(t('common.toast.error'), 'error')
+          if (res.ok) {
+            ui.toast.show({ text: t('common.toast.deleted'), type: 'success' })
+            ui.modal.close()
+            invalidateAll()
+            queryClient.invalidateQueries({ queryKey: ['quests'] })
+            queryClient.invalidateQueries({ queryKey: ['revenue'] })
+          } else {
+            ui.toast.show({ text: t('common.toast.error'), type: 'error' })
+          }
         }
       }
     })

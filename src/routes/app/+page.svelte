@@ -65,7 +65,7 @@
       // But toast on ERROR is needed.
     },
     onError: () => {
-      ui.toast.show(t('common.toast.error'), 'error')
+      ui.toast.show({ text: t('common.toast.error'), type: 'error' })
     }
   }))
 </script>
@@ -96,11 +96,11 @@
   <button
     class="btn-primary mb-8 w-full rounded-2xl shadow-lg active:scale-[0.98] dark:shadow-none"
     onclick={() =>
-      ui.modal.show(
-        ModalCleaningAdd,
-        { buildings: questsQuery.data?.map((q: any) => q.building) || [] },
-        { preventCloseOnClickBackdrop: true }
-      )}
+      ui.modal.show({
+        component: ModalCleaningAdd,
+        props: { buildings: questsQuery.data?.map((q: any) => q.building) || [] },
+        options: { preventCloseOnClickBackdrop: true }
+      })}
   >
     <Plus />
     {t('cleaning.add_record')}

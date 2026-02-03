@@ -59,12 +59,12 @@
     })
 
     if (res.ok) {
-      ui.toast.show(t('common.toast.saved'), 'success')
+      ui.toast.show({ text: t('common.toast.saved'), type: 'success' })
       ui.modal.close()
       queryClient.invalidateQueries({ queryKey: ['quests'] })
       queryClient.invalidateQueries({ queryKey: ['revenue'] })
     } else {
-      ui.toast.show(t('common.toast.error'), 'error')
+      ui.toast.show({ text: t('common.toast.error'), type: 'error' })
     }
   }
 </script>

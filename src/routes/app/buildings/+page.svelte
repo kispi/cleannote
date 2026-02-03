@@ -17,7 +17,11 @@
     {#each data.buildings as building (building.id)}
       <button
         onclick={() =>
-          ui.modal.show(ModalBuildingAdd, { building }, { preventCloseOnClickBackdrop: true })}
+          ui.modal.show({
+            component: ModalBuildingAdd,
+            props: { building },
+            options: { preventCloseOnClickBackdrop: true }
+          })}
         class="border-base bg-base-100 hover:bg-base-200 w-full rounded-xl border p-4 text-left shadow-sm transition-transform active:scale-[0.98] dark:shadow-none"
       >
         <div class="mb-2 flex items-start justify-between">
@@ -48,7 +52,12 @@
 
   <!-- Floating Action Button -->
   <button
-    onclick={() => ui.modal.show(ModalBuildingAdd, {}, { preventCloseOnClickBackdrop: true })}
+    onclick={() =>
+      ui.modal.show({
+        component: ModalBuildingAdd,
+        props: {},
+        options: { preventCloseOnClickBackdrop: true }
+      })}
     class="fixed right-6 bottom-24 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-300 transition-transform active:scale-95"
   >
     <Plus />

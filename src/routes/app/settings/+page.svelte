@@ -18,16 +18,19 @@
   ]
 
   const handleLogout = () => {
-    ui.modal.show(ModalConfirm, {
-      title: t('settings.logout_confirm.title'),
-      message: t('settings.logout_confirm.message'),
-      confirmText: t('settings.logout_confirm.confirm'),
-      cancelText: t('common.cancel'),
-      isDanger: true,
-      onConfirm: async () => {
-        const form = document.getElementById('logout-form') as HTMLFormElement
-        if (form) form.submit()
-        ui.modal.close()
+    ui.modal.show({
+      component: ModalConfirm,
+      props: {
+        title: t('settings.logout_confirm.title'),
+        message: t('settings.logout_confirm.message'),
+        confirmText: t('settings.logout_confirm.confirm'),
+        cancelText: t('common.cancel'),
+        isDanger: true,
+        onConfirm: async () => {
+          const form = document.getElementById('logout-form') as HTMLFormElement
+          if (form) form.submit()
+          ui.modal.close()
+        }
       }
     })
   }
@@ -73,10 +76,10 @@
         {#each themes as theme}
           <button
             type="button"
-            class="flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all {settings.theme ===
+            class="flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all active:scale-95 {settings.theme ===
             theme.value
               ? 'bg-base-100 text-base-content shadow-sm'
-              : 'text-sub-content hover:text-base-content'}"
+              : 'text-sub-content hover:text-base-content hover:bg-gray-100 dark:hover:bg-gray-700'}"
             onclick={() => (settings.theme = theme.value)}
           >
             {t(theme.label)}
@@ -99,10 +102,10 @@
         {#each locales as locale}
           <button
             type="button"
-            class="flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all {settings.locale ===
+            class="flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all active:scale-95 {settings.locale ===
             locale.value
               ? 'bg-base-100 text-base-content shadow-sm'
-              : 'text-sub-content hover:text-base-content'}"
+              : 'text-sub-content hover:text-base-content hover:bg-gray-100 dark:hover:bg-gray-700'}"
             onclick={() => (settings.locale = locale.value)}
           >
             {t(locale.label)}
@@ -114,13 +117,13 @@
     <!-- Other Links -->
     <div class="space-y-3">
       <button
-        class="border-base bg-base-100 flex w-full items-center justify-between rounded-xl border p-4 shadow-sm transition-transform active:scale-[0.99]"
+        class="border-base bg-base-100 hover:bg-base-200 flex w-full items-center justify-between rounded-xl border p-4 shadow-sm transition-all active:scale-[0.98] dark:hover:bg-gray-800"
       >
         <span class="text-base-content font-medium">{t('settings.backup')}</span>
         <ChevronRight size={18} class="text-sub-content" />
       </button>
       <button
-        class="border-base bg-base-100 flex w-full items-center justify-between rounded-xl border p-4 shadow-sm transition-transform active:scale-[0.99]"
+        class="border-base bg-base-100 hover:bg-base-200 flex w-full items-center justify-between rounded-xl border p-4 shadow-sm transition-all active:scale-[0.98] dark:hover:bg-gray-800"
       >
         <span class="text-base-content font-medium">{t('settings.terms')}</span>
         <ChevronRight size={18} class="text-sub-content" />
@@ -129,7 +132,11 @@
   </div>
 
   <form method="POST" action="/auth/logout" class="mt-8" id="logout-form">
-    <button type="button" onclick={handleLogout} class="btn-danger w-full">
+    <button
+      type="button"
+      onclick={handleLogout}
+      class="btn-danger w-full shadow-md transition-all hover:shadow-lg active:scale-95"
+    >
       <LogOut size={18} />
       {t('settings.logout')}
     </button>
