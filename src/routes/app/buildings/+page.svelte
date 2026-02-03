@@ -3,6 +3,7 @@
   import { ui } from '$lib/store/ui.svelte'
   import { t } from '$lib/i18n'
   import ModalBuildingAdd from '$lib/components/modals/ModalBuildingAdd.svelte'
+  import { priceWithSign } from '$lib/utils/format'
 
   let { data } = $props()
 </script>
@@ -22,20 +23,20 @@
             props: { building },
             options: { preventCloseOnClickBackdrop: true }
           })}
-        class="border-base bg-base-100 hover:bg-base-200 w-full rounded-xl border p-4 text-left shadow-sm transition-transform active:scale-[0.98] dark:shadow-none"
+        class="bg-base-100 hover:bg-base-200 w-full rounded-2xl border border-gray-100 p-5 text-left shadow-sm transition-transform active:scale-[0.98] dark:border-gray-700 dark:bg-gray-800/50 dark:shadow-none dark:hover:bg-gray-800"
       >
         <div class="mb-2 flex items-start justify-between">
           <h3 class="text-base-content text-lg font-bold">{building.name}</h3>
           <span class="text-sm font-bold text-blue-600 dark:text-blue-400">
-            {building.price_per_clean ? building.price_per_clean.toLocaleString() : 0}{t(
-              'common.unit_won'
-            )}
+            {building.price_per_clean ? priceWithSign(building.price_per_clean) : 0}
           </span>
         </div>
         {#if building.scheduled_days}
           <div class="mb-3 flex flex-wrap gap-1 text-xs text-gray-500 dark:text-gray-400">
             {#each building.scheduled_days.split(',') as day}
-              <span class="bg-base-200 rounded px-2 py-1">{t(`building.days_option.${day}`)}</span>
+              <span class="bg-base-200 rounded px-2 py-1 dark:bg-gray-700 dark:text-gray-300"
+                >{t(`building.days_option.${day}`)}</span
+              >
             {/each}
           </div>
         {/if}

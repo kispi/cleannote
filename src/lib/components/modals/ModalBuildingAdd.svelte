@@ -2,8 +2,8 @@
   import { X, Trash2 } from 'lucide-svelte'
   import { ui } from '$lib/store/ui.svelte'
   import { t } from '$lib/i18n'
-  import { invalidateAll } from '$app/navigation'
-  import { useQueryClient } from '@tanstack/svelte-query'
+  import { korPrice } from '$lib/utils/format'
+  import { useUpsertBuilding, useDeleteBuilding } from '$lib/hooks/useBuildings'
   import ModalConfirm from './ModalConfirm.svelte'
 
   interface Props {
@@ -18,7 +18,8 @@
 
   let { building }: Props = $props()
 
-  const queryClient = useQueryClient()
+  const upsertMutation = useUpsertBuilding()
+  const deleteMutation = useDeleteBuilding()
 
   let name = $state('')
   let address = $state('')
@@ -59,36 +60,17 @@
     }
   }
 
-  const handleSubmit = async (e: Event) => {
+  const handleSubmit = (e: Event) => {
     e.preventDefault()
     if (!name) return
 
-    const method = building ? 'PUT' : 'POST'
-    const url = building ? `/api/buildings/${building.id}` : '/api/buildings'
-
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name,
-        address,
-        price_per_clean: price,
-        scheduled_days: days.join(',')
-      })
+    upsertMutation.mutate({
+      id: building?.id,
+      name,
+      address,
+      price_per_clean: price,
+      scheduled_days: days.join(',')
     })
-
-    if (res.ok) {
-      ui.toast.show({
-        text: building ? t('common.toast.saved') : t('common.toast.added'),
-        type: 'success'
-      })
-      ui.modal.close()
-      invalidateAll()
-      queryClient.invalidateQueries({ queryKey: ['quests'] })
-      queryClient.invalidateQueries({ queryKey: ['revenue'] })
-    } else {
-      ui.toast.show({ text: t('common.toast.error'), type: 'error' })
-    }
   }
 
   const onDeleteClick = () => {
@@ -103,19 +85,7 @@
         cancelText: t('common.cancel'),
         isDanger: true,
         onConfirm: async () => {
-          const res = await fetch(`/api/buildings/${building.id}`, {
-            method: 'DELETE'
-          })
-
-          if (res.ok) {
-            ui.toast.show({ text: t('common.toast.deleted'), type: 'success' })
-            ui.modal.close()
-            invalidateAll()
-            queryClient.invalidateQueries({ queryKey: ['quests'] })
-            queryClient.invalidateQueries({ queryKey: ['revenue'] })
-          } else {
-            ui.toast.show({ text: t('common.toast.error'), type: 'error' })
-          }
+          deleteMutation.mutate(building!.id)
         }
       }
     })
@@ -130,15 +100,18 @@
     <button
       type="button"
       onclick={() => ui.modal.close()}
-      class="text-sub-content hover:text-base-content cursor-pointer p-1"
+      class="text-sub-content hover:bg-base-200 hover:text-base-content cursor-pointer rounded-full p-2 transition-colors"
     >
-      <X />
+      <X size={20} />
     </button>
   </div>
 
   <form onsubmit={handleSubmit} class="space-y-4">
+    <!-- ... name/address inputs ... -->
     <div>
-      <label class="text-base-content mb-1 block text-sm font-medium">{t('building.name')}</label>
+      <label for="name" class="text-base-content mb-1 block text-sm font-medium"
+        >{t('building.name')}</label
+      >
       <input
         type="text"
         bind:value={name}
@@ -148,7 +121,8 @@
     </div>
 
     <div>
-      <label class="text-base-content mb-1 block text-sm font-medium">{t('building.address')}</label
+      <label for="address" class="text-base-content mb-1 block text-sm font-medium"
+        >{t('building.address')}</label
       >
       <input
         type="text"
@@ -159,30 +133,61 @@
     </div>
 
     <div>
-      <label class="text-base-content mb-1 block text-sm font-medium">{t('building.price')}</label>
+      <label for="price" class="text-base-content mb-1 block text-sm font-medium"
+        >{t('building.price')}</label
+      >
       <div class="relative">
         <input
           type="number"
           bind:value={price}
+          max="99999999"
+          oninput={() => {
+            if (price > 99999999) price = 99999999
+            if (price < 0) price = 0
+          }}
+          onkeydown={(e) => {
+            if (e.key === 'ArrowUp') {
+              e.preventDefault()
+              const next = Math.floor(price / 1000) * 1000 + 1000
+              price = next > 99999999 ? 99999999 : next
+            }
+            if (e.key === 'ArrowDown') {
+              e.preventDefault()
+              const next = Math.ceil(price / 1000) * 1000 - 1000
+              price = next < 0 ? 0 : next
+            }
+          }}
           class="border-base bg-base-100 text-base-content placeholder:text-sub-content w-full rounded-xl border px-4 py-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
         />
-        <span class="text-sub-content absolute top-3.5 right-4">{t('common.unit_won')}</span>
+        <!-- Removed absolute '원' span here -->
       </div>
-      <div class="mt-2 flex gap-2 overflow-x-auto">
-        {#each [10000, 50000, 100000] as amount}
-          <button
-            type="button"
-            onclick={() => (price += amount)}
-            class="bg-base-200 text-sub-content rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
-          >
-            +{amount.toLocaleString()}
-          </button>
-        {/each}
+      <div class="mt-2 flex items-center gap-3">
+        <div class="flex gap-2 overflow-x-auto">
+          {#each [10000, 50000, 100000] as amount}
+            <button
+              type="button"
+              onclick={() => {
+                const next = price + amount
+                price = next > 99999999 ? 99999999 : next
+              }}
+              class="bg-base-200 text-sub-content rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
+            >
+              +{amount.toLocaleString()}
+            </button>
+          {/each}
+        </div>
+        {#if price > 0}
+          <span class="ml-auto text-sm font-bold text-blue-600 dark:text-blue-400">
+            {korPrice(price)}
+          </span>
+        {/if}
       </div>
     </div>
 
     <div>
-      <label class="text-base-content mb-2 block text-sm font-medium">{t('building.days')}</label>
+      <label for="days" class="text-base-content mb-2 block text-sm font-medium"
+        >{t('building.days')}</label
+      >
       <div class="flex flex-wrap gap-2">
         {#each dayOptions as d}
           <button
@@ -191,8 +196,8 @@
             class="h-10 w-10 cursor-pointer rounded-full text-sm font-bold transition-colors {days.includes(
               d.value
             )
-              ? 'bg-blue-600 text-white'
-              : 'bg-base-200 text-sub-content'}"
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-base-200 text-sub-content hover:bg-gray-300 dark:hover:bg-gray-600'}"
           >
             {d.label}
           </button>
@@ -202,12 +207,21 @@
 
     <div class="mt-6 flex gap-3">
       {#if building}
-        <button type="button" onclick={onDeleteClick} class="btn-danger flex-1">
+        <button
+          type="button"
+          onclick={onDeleteClick}
+          class="btn-danger flex-1"
+          disabled={deleteMutation.isPending}
+        >
           <Trash2 size={18} />
           {t('common.delete')}
         </button>
       {/if}
-      <button type="submit" class="btn-primary flex-[2]" disabled={!name}>
+      <button
+        type="submit"
+        class="btn-primary flex-[2]"
+        disabled={!name || upsertMutation.isPending}
+      >
         {building ? t('common.edit') : t('common.add')}
       </button>
     </div>

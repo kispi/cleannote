@@ -37,7 +37,7 @@
   >
     <!-- Modal Content -->
     <div
-      class="relative w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-xl"
+      class="bg-base-100 relative w-full max-w-lg overflow-hidden rounded-xl shadow-xl"
       transition:scale={{ duration: 200, start: 0.95 }}
       role="document"
       tabindex="-1"

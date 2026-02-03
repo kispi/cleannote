@@ -18,10 +18,17 @@ export default {
     other_quests: '그 외 건물',
     no_quests: '오늘 예정된 청소가 없습니다.',
     completed: '완료',
-    pending: '대기'
+    pending: '대기',
+    recent_logs: '최근 청소 기록 (20건)',
+    no_logs_title: '아직 기록이 없어요',
+    no_logs_message: '청소 기록을 추가하여 수익을 관리해보세요!'
   },
   cleaning: {
-    add_record: '청소 기록 추가'
+    add_record: '청소 기록 추가',
+    delete_confirm: {
+        title: '기록 삭제',
+        message: '이 청소 기록을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'
+    }
   },
   nav: {
     home: '홈',
@@ -78,7 +85,7 @@ export default {
     delete: '삭제',
     cancel: '취소',
     confirm: '확인',
-    unit_won: '원',
+    unit_won: '₩',
     toast: {
         saved: '저장되었습니다.',
         added: '추가되었습니다.',

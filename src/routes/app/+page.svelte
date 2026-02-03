@@ -1,73 +1,43 @@
 <script lang="ts">
-  import { createQuery, createMutation, useQueryClient } from '@tanstack/svelte-query'
+  import { useQueryClient } from '@tanstack/svelte-query'
   import { t } from '$lib/i18n'
   import { ui } from '$lib/store/ui.svelte'
   import dayjs from 'dayjs'
-  import { CheckCircle2, Circle, Trophy, Plus } from 'lucide-svelte'
+  import 'dayjs/locale/ko'
+  import { Trash2, Plus, CalendarClock } from 'lucide-svelte'
   import ModalCleaningAdd from '$lib/components/modals/ModalCleaningAdd.svelte'
+  import ModalConfirm from '$lib/components/modals/ModalConfirm.svelte'
+  import { useRevenue } from '$lib/hooks/useRevenue'
+  import { useBuildings } from '$lib/hooks/useBuildings'
+  import { useCleaningLogs, useDeleteCleaningLog } from '$lib/hooks/useCleaningLogs'
+  import { priceWithSign } from '$lib/utils/format'
+
+  dayjs.locale('ko')
 
   let { data } = $props()
 
   const queryClient = useQueryClient()
-  const today = dayjs().format('YYYY-MM-DD')
   const currentMonth = dayjs().format('YYYY-MM')
 
-  const revenueQuery = createQuery(() => ({
-    queryKey: ['revenue', currentMonth],
-    queryFn: async () => {
-      const res = await fetch(`/api/revenue?month=${currentMonth}`)
-      if (!res.ok) throw new Error('Failed to fetch revenue')
-      return res.json()
-    }
-  }))
+  const revenueQuery = useRevenue(currentMonth)
+  const buildingsQuery = useBuildings()
+  const logsQuery = useCleaningLogs(20)
+  const deleteMutation = useDeleteCleaningLog()
 
-  const questsQuery = createQuery(() => ({
-    queryKey: ['quests', today],
-    queryFn: async () => {
-      const res = await fetch(`/api/quests?date=${today}`)
-      if (!res.ok) throw new Error('Failed to fetch quests')
-      return res.json()
-    }
-  }))
-
-  // Computed lists
-  let todayQuests = $derived(questsQuery.data?.filter((q: any) => q.is_scheduled) || [])
-  let otherQuests = $derived(questsQuery.data?.filter((q: any) => !q.is_scheduled) || [])
-
-  const toggleMutation = createMutation(() => ({
-    mutationFn: async (quest: any) => {
-      if (quest.status === 'completed') {
-        // UNDO -> DELETE
-        if (!quest.log_id) return // Should not happen
-        const res = await fetch(`/api/cleaning-logs?id=${quest.log_id}`, { method: 'DELETE' })
-        if (!res.ok) throw new Error()
-        return { type: 'delete', id: quest.log_id }
-      } else {
-        // DO -> POST
-        const res = await fetch('/api/cleaning-logs', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            building_id: quest.building.id,
-            clean_start: dayjs().toISOString(),
-            status: 'completed'
-          })
-        })
-        if (!res.ok) throw new Error()
-        return res.json()
+  const handleDelete = (log: any) => {
+    ui.modal.show({
+      component: ModalConfirm,
+      props: {
+        title: t('cleaning.delete_confirm.title'),
+        message: t('cleaning.delete_confirm.message'),
+        isDanger: true,
+        confirmText: t('common.delete'),
+        onConfirm: async () => {
+          deleteMutation.mutate(log.id)
+        }
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['quests'] })
-      queryClient.invalidateQueries({ queryKey: ['revenue'] })
-      // ui.toast.show(t('common.toast.saved'), 'success') // Optional, maybe too noisy for quick toggles?
-      // User asked for "Check/Uncheck". Silent update + visual change is better.
-      // But toast on ERROR is needed.
-    },
-    onError: () => {
-      ui.toast.show({ text: t('common.toast.error'), type: 'error' })
-    }
-  }))
+    })
+  }
 </script>
 
 <div class="p-6 pb-24">
@@ -82,11 +52,11 @@
           {dayjs().format('YYYY.MM.DD dddd')}
         </p>
       </div>
-      <!-- Stats (Simple for now) -->
+      <!-- Stats -->
       <div class="text-right">
         <p class="text-sub-content text-xs">{t('home.monthly_revenue')}</p>
         <p class="text-xl font-bold text-blue-600 dark:text-blue-400">
-          {(revenueQuery.data?.totalAmount || 0).toLocaleString()}{t('common.unit_won')}
+          {priceWithSign(revenueQuery.data?.totalAmount || 0)}
         </p>
       </div>
     </div>
@@ -98,7 +68,7 @@
     onclick={() =>
       ui.modal.show({
         component: ModalCleaningAdd,
-        props: { buildings: questsQuery.data?.map((q: any) => q.building) || [] },
+        props: { buildings: buildingsQuery.data || [] },
         options: { preventCloseOnClickBackdrop: true }
       })}
   >
@@ -106,95 +76,61 @@
     {t('cleaning.add_record')}
   </button>
 
-  <!-- Section: Today's Quests -->
+  <!-- Section: Recent Logs -->
   <section>
     <div class="mb-4 flex items-center justify-between">
-      <h3 class="text-base-content text-lg font-bold">{t('home.today_quests')}</h3>
-      <span class="bg-base-200 text-sub-content rounded-full px-3 py-1 text-xs font-bold">
-        {questsQuery.data?.filter((q: any) => q.status === 'completed').length || 0} / {questsQuery
-          .data?.length || 0}
-      </span>
+      <h3 class="text-base-content text-lg font-bold">{t('home.recent_logs')}</h3>
     </div>
 
-    {#if questsQuery.isLoading}
+    {#if logsQuery.isLoading}
       <div class="space-y-3">
         {#each Array(3) as _}
           <div class="bg-base-200 h-20 w-full animate-pulse rounded-xl"></div>
         {/each}
       </div>
-    {:else if questsQuery.data?.length === 0}
+    {:else if logsQuery.data?.length === 0}
       <div
         class="bg-base-200 flex flex-col items-center justify-center rounded-2xl border border-gray-100 py-12 text-center dark:border-gray-800"
       >
         <div
           class="mb-3 rounded-full bg-blue-100 p-4 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
         >
-          <CheckCircle2 size={32} />
+          <CalendarClock size={32} />
         </div>
-        <p class="text-base-content font-bold">{t('home.no_quests_title')}</p>
-        <p class="text-sub-content text-sm">{t('home.no_quests_message')}</p>
+        <p class="text-base-content font-bold">{t('home.no_logs_title')}</p>
+        <p class="text-sub-content text-sm">{t('home.no_logs_message')}</p>
       </div>
     {:else}
       <div class="space-y-3">
-        {#each todayQuests as quest (quest.building.id)}
-          {@render questItem(quest)}
+        {#each logsQuery.data as log (log.id)}
+          <div
+            class="group bg-base-100 flex w-full items-center justify-between rounded-2xl border p-5 shadow-sm transition-all dark:border-gray-700 dark:bg-gray-800/50"
+          >
+            <div class="text-left">
+              <h4 class="text-base-content text-lg font-bold">
+                {log.building.name}
+              </h4>
+              <p class="text-sub-content mt-0.5 text-sm">
+                {dayjs(log.clean_start).format('MM.DD (dd)')} • {log.building.address || ''}
+              </p>
+              {#if log.earned_amount > 0}
+                <p class="mt-1 font-bold text-blue-600 dark:text-blue-400">
+                  {priceWithSign(log.earned_amount)}
+                </p>
+              {/if}
+            </div>
+
+            <button
+              class="text-sub-content rounded-full p-3 transition-colors hover:bg-red-50 hover:text-red-500 active:scale-90 dark:hover:bg-red-900/20"
+              onclick={() => handleDelete(log)}
+              disabled={deleteMutation.isPending}
+              aria-label="Delete log"
+            >
+              <Trash2 size={20} />
+            </button>
+          </div>
         {/each}
       </div>
     {/if}
   </section>
-
-  <!-- Section: Other Buildings -->
-  {#if otherQuests.length > 0}
-    <section class="mt-8">
-      <div class="mb-4 flex items-center justify-between">
-        <h3 class="text-base-content text-lg font-bold">
-          {t('home.other_quests') || '그 외 건물'}
-        </h3>
-      </div>
-      <div class="space-y-3">
-        {#each otherQuests as quest (quest.building.id)}
-          {@render questItem(quest)}
-        {/each}
-      </div>
-    </section>
-  {/if}
 </div>
-
-{#snippet questItem(quest: any)}
-  <button
-    class="group flex w-full items-center justify-between rounded-2xl border p-5 shadow-sm transition-all active:scale-[0.98]
-    {quest.status === 'completed'
-      ? 'border-blue-100 bg-blue-50/50 dark:border-blue-900/30 dark:bg-blue-900/10'
-      : 'border-gray-100 bg-white hover:border-blue-200 dark:border-gray-800 dark:bg-gray-900'}"
-    onclick={() => toggleMutation.mutate(quest)}
-    disabled={toggleMutation.isPending}
-  >
-    <div class="text-left">
-      <h4
-        class="text-lg font-bold text-gray-900 dark:text-white {quest.status === 'completed'
-          ? 'line-through opacity-50'
-          : ''}"
-      >
-        {quest.building.name}
-      </h4>
-      <p class="text-sm text-gray-500 dark:text-gray-400">
-        {quest.building.address || ''}
-        {#if quest.building.price_per_clean}
-          • {quest.building.price_per_clean.toLocaleString()}{t('common.unit_won')}
-        {/if}
-      </p>
-    </div>
-
-    <div
-      class="flex-shrink-0 transition-transform duration-200 {quest.status === 'completed'
-        ? 'scale-110'
-        : 'group-hover:scale-110'}"
-    >
-      {#if quest.status === 'completed'}
-        <CheckCircle2 class="h-8 w-8 fill-blue-100 text-blue-500 dark:fill-blue-900" />
-      {:else}
-        <Circle class="h-8 w-8 text-gray-300 dark:text-gray-600" />
-      {/if}
-    </div>
-  </button>
-{/snippet}

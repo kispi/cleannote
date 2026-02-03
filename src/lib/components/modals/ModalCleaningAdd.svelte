@@ -2,9 +2,10 @@
   import { X, Sparkles } from 'lucide-svelte'
   import { ui } from '$lib/store/ui.svelte'
   import { t } from '$lib/i18n'
-  import { useQueryClient } from '@tanstack/svelte-query'
   import dayjs from 'dayjs'
   import Dropdown from '$lib/components/ui/Dropdown.svelte'
+  import { useCreateCleaningLog } from '$lib/hooks/useCleaningLogs'
+  import { priceWithSign } from '$lib/utils/format'
 
   interface Props {
     buildings: any[] // passed from parent
@@ -12,7 +13,7 @@
 
   let { buildings }: Props = $props()
 
-  const queryClient = useQueryClient()
+  const createMutation = useCreateCleaningLog()
 
   let selectedBuildingId = $state<number | null>(null)
 
@@ -40,7 +41,7 @@
       .sort((a, b) => Number(b.isToday) - Number(a.isToday))
   )
 
-  const handleSubmit = async (e: Event) => {
+  const handleSubmit = (e: Event) => {
     e.preventDefault()
     if (!selectedBuildingId || !date || !time) return
 
@@ -48,24 +49,11 @@
     // Combine YYYY-MM-DD and HH:mm
     const clean_start = dayjs(`${date} ${time}`).toISOString()
 
-    const res = await fetch('/api/cleaning-logs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        building_id: selectedBuildingId,
-        clean_start,
-        status: 'completed'
-      })
+    createMutation.mutate({
+      building_id: selectedBuildingId,
+      clean_start,
+      status: 'completed'
     })
-
-    if (res.ok) {
-      ui.toast.show({ text: t('common.toast.saved'), type: 'success' })
-      ui.modal.close()
-      queryClient.invalidateQueries({ queryKey: ['quests'] })
-      queryClient.invalidateQueries({ queryKey: ['revenue'] })
-    } else {
-      ui.toast.show({ text: t('common.toast.error'), type: 'error' })
-    }
   }
 </script>
 
@@ -77,16 +65,18 @@
     <button
       type="button"
       onclick={() => ui.modal.close()}
-      class="text-sub-content hover:text-base-content cursor-pointer p-1"
+      class="text-sub-content hover:bg-base-200 hover:text-base-content cursor-pointer rounded-full p-2 transition-colors"
     >
-      <X />
+      <X size={20} />
     </button>
   </div>
 
   <form onsubmit={handleSubmit} class="space-y-4">
     <!-- Building Select -->
     <div>
-      <label class="mb-1 block text-sm font-medium text-gray-700">{t('building.name')}</label>
+      <label for="building_id" class="text-base-content mb-1 block text-sm font-medium"
+        >{t('building.name')}</label
+      >
       <Dropdown
         bind:value={selectedBuildingId}
         options={buildingOptions}
@@ -95,7 +85,7 @@
         {#snippet renderOption(opt)}
           <div class="flex w-full flex-col items-start gap-1 py-1">
             <div class="flex w-full items-center justify-between">
-              <span class="font-medium text-gray-700 dark:text-gray-200">{opt.label}</span>
+              <span class="text-base-content font-medium">{opt.label}</span>
               {#if opt.isToday}
                 <span
                   class="flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-600 dark:bg-blue-900 dark:text-blue-300"
@@ -106,10 +96,10 @@
               {/if}
             </div>
 
-            <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            <div class="flex items-center gap-2 text-xs text-gray-500">
               <span>{opt.address || t('building.placeholder.address')}</span>
               {#if opt.price}
-                <span>• {opt.price.toLocaleString()}{t('common.unit_won')}</span>
+                <span>• {priceWithSign(opt.price)}</span>
               {/if}
             </div>
           </div>
@@ -119,7 +109,9 @@
 
     <!-- Date -->
     <div>
-      <label class="mb-1 block text-sm font-medium text-gray-700">{t('common.date')}</label>
+      <label for="date" class="text-base-content mb-1 block text-sm font-medium"
+        >{t('common.date')}</label
+      >
       <input
         type="date"
         bind:value={date}
@@ -129,7 +121,9 @@
 
     <!-- Time -->
     <div>
-      <label class="mb-1 block text-sm font-medium text-gray-700">{t('common.time')}</label>
+      <label for="time" class="text-base-content mb-1 block text-sm font-medium"
+        >{t('common.time')}</label
+      >
       <input
         type="time"
         bind:value={time}

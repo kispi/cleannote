@@ -50,12 +50,7 @@ trigger: always_on
   - `POST`: Create
   - `PUT`: Update (Full/Partial)
   - `DELETE`: Soft Delete action
-- **Endpoints:** Noun-based only (e.g., `/api/buildings`). NO verbs in URLs.
-- **Methods:**
-  - `GET`: Read
-  - `POST`: Create
-  - `PUT`: Update (Full/Partial)
-  - `DELETE`: Soft Delete action
+- **Parameters:** `DELETE` and `PUT` requests MUST use URL parameters (e.g., `/api/items/123`), NOT query parameters (e.g., `/api/items?id=123`).
 - **Response:** JSON format.
 - **Architecture:** Do NOT use SvelteKit Server Actions (`?/action`). All mutations MUST be done via client-side `fetch` calls to these REST API endpoints.
 
