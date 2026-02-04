@@ -93,10 +93,10 @@ export const GET = async ({ url, cookies }) => {
       <head>
         <script>
           if (window.opener) {
-            window.opener.location.href = '/app';
+            window.opener.location.href = '/';
             window.close();
           } else {
-            window.location.href = '/app';
+            window.location.href = '/';
           }
         </script>
       </head>

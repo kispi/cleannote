@@ -7,5 +7,5 @@ export const POST = async ({ cookies }) => {
     await invalidateSession(sessionToken)
   }
   deleteSessionCookie({ cookies } as any)
-  throw redirect(302, '/')
+  throw redirect(302, '/login')
 }

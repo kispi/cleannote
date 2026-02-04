@@ -27,27 +27,27 @@
     class="flex w-full items-center justify-between rounded-t-3xl bg-white/95 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] backdrop-blur-md dark:border-t dark:border-gray-800 dark:bg-gray-900/95"
   >
     <a
-      href="/app"
+      href="/"
       class="group flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 {activeClass(
-        '/app'
+        '/'
       )}"
     >
       <Home size={24} class="transition-transform group-active:scale-95" />
       <span class="text-[10px] font-medium">{t('nav.home')}</span>
     </a>
     <a
-      href="/app/buildings"
+      href="/buildings"
       class="group flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 {activeClass(
-        '/app/buildings'
+        '/buildings'
       )}"
     >
       <Building size={24} class="transition-transform group-active:scale-95" />
       <span class="text-[10px] font-medium">{t('nav.buildings')}</span>
     </a>
     <a
-      href="/app/settings"
+      href="/settings"
       class="group flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 {activeClass(
-        '/app/settings'
+        '/settings'
       )}"
     >
       <Settings size={24} class="transition-transform group-active:scale-95" />
