@@ -4,11 +4,11 @@ import { eq } from 'drizzle-orm'
 import { type RequestEvent } from '@sveltejs/kit'
 
 const SESSION_COOKIE_NAME = 'auth_session'
-const ONE_WEEK_MS = 1000 * 60 * 60 * 24 * 7
+const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30
 
 export const createSession = async (userId: number) => {
   const sessionToken = crypto.randomUUID()
-  const expiresAt = new Date(Date.now() + ONE_WEEK_MS)
+  const expiresAt = new Date(Date.now() + THIRTY_DAYS_MS)
 
   await db.insert(sessions).values({
     user_id: userId,
@@ -39,6 +39,16 @@ export const validateSession = async (token: string) => {
   // Renew session if close to expiry (optional optimization: e.g. < 1 day left)
   // For simplicity, just return valid session
   return session
+}
+
+export const updateSession = async (tokenId: number) => {
+  const expiresAt = new Date(Date.now() + THIRTY_DAYS_MS)
+  await db
+    .update(sessions)
+    .set({ expires_at: expiresAt })
+    .where(eq(sessions.id, tokenId))
+
+  return expiresAt
 }
 
 export const invalidateSession = async (token: string) => {

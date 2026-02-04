@@ -3,9 +3,9 @@ export default {
     name: '클린노트'
   },
   intro: {
-    slogan: '계단 청소 수익 관리의 정석',
-    title: '수익이 한눈에',
-    desc: '복잡한 장부 정리 없이<br />오늘 청소와 이번 달 수익을<br />가장 직관적으로 관리하세요.'
+    slogan: '건물 청소 매출 관리의 정석',
+    title: '매출이 한눈에',
+    desc: '번거로운 장부 정리 없이<br />오늘 청소와 이번 달 매출을<br />가장 직관적으로 관리하세요.'
   },
   login: {
     kakao: '카카오로 3초만에 시작하기'
@@ -13,14 +13,14 @@ export default {
   home: {
     greeting: '{name}님, 안녕하세요!',
     earned_amount: '수령액',
-    monthly_revenue: '이번 달 수익',
+    monthly_revenue: '이번 달 매출',
     today_quests: '오늘의 청소',
     other_quests: '그 외 건물',
     no_quests: '오늘 예정된 청소가 없습니다.',
     completed: '완료',
     pending: '대기',
     no_logs_title: '아직 기록이 없어요',
-    no_logs_message: '청소 기록을 추가하여 수익을 관리해보세요!'
+    no_logs_message: '청소 기록을 추가하여 매출을 관리해보세요!'
   },
   cleaning: {
     add_record: '청소 기록 추가',
