@@ -12,13 +12,13 @@ export default {
   },
   home: {
     greeting: 'Hello, {name}!',
+    earned_amount: 'Earned Amount',
     monthly_revenue: 'This Month Revenue',
     today_quests: `Today's Quests`,
     other_quests: 'Other Buildings',
     no_quests: 'No cleaning scheduled for today.',
     completed: 'Completed',
     pending: 'Pending',
-    recent_logs: 'Recent Cleaning Logs (20)',
     no_logs_title: 'No logs yet',
     no_logs_message: 'Add cleaning logs to manage your revenue!'
   },
@@ -36,25 +36,26 @@ export default {
      settings: 'Settings'
   },
   building: {
-     manage: 'Manage Buildings',
-     total: 'Managing {count} buildings.',
-     add: 'Add New Building',
-     edit: 'Edit Building',
-     name: 'Building Name',
-     address: 'Address (Optional)',
-     price: 'Price per cleaning',
-     days: 'Schedule',
-     placeholder: {
-         name: 'Ex: Gangnam Villa 101',
-         address: 'Enter details'
-     },
-     days_option: {
-        0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat'
+    manage: 'Manage Buildings',
+    add: 'Add New Building',
+    edit: 'Edit Building',
+    name: 'Building Name',
+    address: 'Address (Optional)',
+    price: 'Price per cleaning',
+    days: 'Schedule',
+    memo: 'Memo',
+    placeholder: {
+      name: 'Ex: Gangnam Villa 101',
+      address: 'Enter details',
+      memo: 'Enter notes about this building'
     },
-     confirm_delete: {
-         title: 'Delete Building',
-         message: 'Are you sure you want to delete this building?\nThis action cannot be undone.'
-     }
+    days_option: {
+      0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat'
+    },
+    delete_confirm: {
+      title: 'Delete Building',
+      message: 'Are you sure you want to delete this building?\nThis action cannot be undone.'
+    }
   },
   settings: {
     title: 'Settings',
@@ -83,20 +84,23 @@ export default {
         en: 'English'
     }
   },
+  navigation: {
+    title: 'Select Map App'
+  },
   common: {
-     save: 'Save',
-     add: 'Add',
-     edit: 'Edit',
-     delete: 'Delete',
-     cancel: 'Cancel',
-     confirm: 'Confirm',
-     unit_won: 'won',
-     toast: {
-         saved: 'Saved successfully.',
-         added: 'Added successfully.',
-         deleted: 'Deleted successfully.',
-         error: 'An error occurred.'
-     },
+    save: 'Save',
+    add: 'Add',
+    edit: 'Edit',
+    delete: 'Delete',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+    unit_won: 'won',
+    toast: {
+      saved: 'Saved successfully.',
+      added: 'Added successfully.',
+      deleted: 'Deleted successfully.',
+      error: 'An error occurred.'
+    },
     date: 'Date',
     time: 'Time'
   }

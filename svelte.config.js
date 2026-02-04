@@ -10,6 +10,13 @@ const config = {
     alias: {
       '@': 'src'
     }
+  },
+  compilerOptions: {
+    warningFilter: (warning) => {
+      // Suppress state_referenced_locally warnings
+      if (warning.code === 'state_referenced_locally') return false
+      return true
+    }
   }
 }
 

@@ -63,8 +63,10 @@ export const buildings = mysqlTable('buildings', {
     .references(() => users.id),
   name: varchar('name', { length: 255 }).notNull(),
   address: text('address'),
-  latitude: double('latitude'),
-  longitude: double('longitude'),
+  api_name: varchar('api_name', { length: 255 }),
+  api_address: text('api_address'),
+  lat: double('lat'),
+  lng: double('lng'),
   price_per_clean: int('price_per_clean').default(0),
   scheduled_days: varchar('scheduled_days', { length: 255 }), // e.g. "Mon,Wed,Fri"
   memo: text('memo')

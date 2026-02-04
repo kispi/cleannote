@@ -1,46 +1,68 @@
-import { createQuery, createMutation, useQueryClient } from '@tanstack/svelte-query'
+import { createInfiniteQuery, createQuery, createMutation, useQueryClient } from '@tanstack/svelte-query'
 import { ui } from '$lib/store/ui.svelte'
 import { t } from '$lib/i18n'
 import { invalidateAll } from '$app/navigation'
+import type { Building, BuildingUpsert } from '$lib/types/building'
 
-export const useBuildings = () => createQuery(() => ({
-  queryKey: ['buildings'],
-  queryFn: async () => {
-    const res = await fetch('/api/buildings')
+export const useBuildings = () => createInfiniteQuery(() => ({
+  queryKey: ['buildings', 'list'],
+  queryFn: async ({ pageParam = 1 }) => {
+    const res = await fetch(`/api/buildings?page=${pageParam}&limit=20`)
     if (!res.ok) throw new Error('Failed to fetch buildings')
     return res.json()
+  },
+  initialPageParam: 1,
+  getNextPageParam: (lastPage: any) => lastPage.nextPage
+}))
+
+export const useAllBuildings = () => createQuery<Building[]>(() => ({
+  queryKey: ['buildings', 'all'],
+  queryFn: async () => {
+    const res = await fetch('/api/buildings?limit=100')
+    if (!res.ok) throw new Error('Failed to fetch buildings')
+    const json = await res.json()
+    // The API returns { data, total, nextPage }
+    // We want to return just the array for the dropdown usage
+    return json.data || []
   }
 }))
 
 export const useUpsertBuilding = () => {
   const queryClient = useQueryClient()
-
+  
   return createMutation(() => ({
-    mutationFn: async (data: any) => {
-      const method = data.id ? 'PUT' : 'POST'
-      const url = data.id ? `/api/buildings/${data.id}` : '/api/buildings'
+    mutationFn: async (data: BuildingUpsert) => {
+      const isEdit = !!data.id
+      const method = isEdit ? 'PUT' : 'POST'
+      const url = isEdit ? `/api/buildings/${data.id}` : '/api/buildings'
       
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       })
-
-      if (!res.ok) throw new Error()
+      
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || 'Failed to upsert building')
+      }
+      
       return res.json()
     },
-    onSuccess: (data, variables) => {
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['buildings'] })
       ui.toast.show({
-        text: variables.id ? t('common.toast.saved') : t('common.toast.added'),
+        text: t('common.toast.saved'),
         type: 'success'
       })
       ui.modal.close()
       invalidateAll()
-      queryClient.invalidateQueries({ queryKey: ['buildings'] }) // Also invalidate 'buildings'
-      queryClient.invalidateQueries({ queryKey: ['revenue'] })
     },
-    onError: () => {
-      ui.toast.show({ text: t('common.toast.error'), type: 'error' })
+    onError: (error: any) => {
+      ui.toast.show({
+        text: error.message,
+        type: 'error'
+      })
     }
   }))
 }
@@ -50,19 +72,30 @@ export const useDeleteBuilding = () => {
 
   return createMutation(() => ({
     mutationFn: async (id: number) => {
-      const res = await fetch(`/api/buildings/${id}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error()
-      return { success: true }
+      const res = await fetch(`/api/buildings/${id}`, {
+        method: 'DELETE'
+      })
+      
+      if (!res.ok) {
+        throw new Error('Failed to delete building')
+      }
+      
+      return res.json()
     },
     onSuccess: () => {
-      ui.toast.show({ text: t('common.toast.deleted'), type: 'success' })
+      queryClient.invalidateQueries({ queryKey: ['buildings'] })
+      ui.toast.show({
+        text: t('common.toast.saved'),
+        type: 'success'
+      })
       ui.modal.close()
       invalidateAll()
-      queryClient.invalidateQueries({ queryKey: ['buildings'] })
-      queryClient.invalidateQueries({ queryKey: ['revenue'] })
     },
-    onError: () => {
-      ui.toast.show({ text: t('common.toast.error'), type: 'error' })
+    onError: (error: any) => {
+      ui.toast.show({
+        text: error.message,
+        type: 'error'
+      })
     }
   }))
 }

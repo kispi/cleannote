@@ -29,7 +29,8 @@ export const PUT = async ({ params, request, locals }) => {
   const body = await request.json()
 
   // Only allow updating specific fields
-  const { name, address, price_per_clean, scheduled_days, memo, latitude, longitude } = body
+  // Only allow updating specific fields
+  const { name, address, pricePerClean, scheduledDays, memo, apiName, apiAddress, lat, lng } = body
 
   const [existing] = await db
     .select()
@@ -45,11 +46,13 @@ export const PUT = async ({ params, request, locals }) => {
     .set({
       name,
       address,
-      price_per_clean,
-      scheduled_days,
+      api_name: apiName,
+      api_address: apiAddress,
+      lat,
+      lng,
+      price_per_clean: pricePerClean,
+      scheduled_days: scheduledDays,
       memo,
-      latitude,
-      longitude,
       updated_at: new Date()
     })
     .where(eq(buildings.id, id))

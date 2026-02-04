@@ -2,19 +2,15 @@
   import { X, Trash2 } from 'lucide-svelte'
   import { ui } from '$lib/store/ui.svelte'
   import { t } from '$lib/i18n'
-  import { korPrice } from '$lib/utils/format'
   import { useUpsertBuilding, useDeleteBuilding } from '$lib/hooks/useBuildings'
   import FormPrice from '$lib/components/ui/FormPrice.svelte'
   import ModalConfirm from './ModalConfirm.svelte'
+  import { createDebounce } from '$lib/utils/debounce'
+  import BuildingAddress from '$lib/components/ui/BuildingAddress.svelte'
+  import type { BuildingUpsert } from '$lib/types/building'
 
   interface Props {
-    building?: {
-      id: number
-      name: string
-      address: string | null
-      pricePerClean: number | null
-      scheduledDays: string | null
-    }
+    building?: BuildingUpsert
   }
 
   let { building }: Props = $props()
@@ -22,26 +18,90 @@
   const upsertMutation = useUpsertBuilding()
   const deleteMutation = useDeleteBuilding()
 
-  let name = $state('')
-  let address = $state('')
-  let price = $state(0)
+  let name = $state(building?.name || '')
+  let address = $state(building?.address || '')
+  let apiName = $state(building?.apiName || '')
+  let apiAddress = $state(building?.apiAddress || '')
+  let lat = $state(building?.lat || null)
+  let lng = $state(building?.lng || null)
+  let price = $state(building?.pricePerClean || 0)
+  let days = $state(building?.scheduledDays ? building.scheduledDays.split(',').map(Number) : [])
+  let memo = $state(building?.memo || '')
+
+  // Search State
+  let searchResults = $state<any[]>([])
+  let showDropdown = $state(false)
+
+  const performSearch = async (query: string) => {
+    if (!query.trim()) {
+      searchResults = []
+      showDropdown = false
+      return
+    }
+
+    try {
+      const res = await fetch(`/api/places/search?query=${encodeURIComponent(query)}`)
+      if (res.ok) {
+        const data = await res.json()
+        searchResults = data.documents
+        showDropdown = true
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const { debounced: debouncedSearch } = createDebounce(performSearch, 300)
+
+  const handleAddressInput = (e: Event) => {
+    const target = e.target as HTMLInputElement
+    address = target.value
+    debouncedSearch(address)
+  }
+
+  const handleAddressClick = () => {
+    // If address has value, search with it. If empty, maybe show empty state or do nothing?
+    // Requirement: "Click to search" -> API call once to open dropdown
+    // If address is empty, searching empty string usually returns nothing or error.
+    // Let's search if there is a value, or maybe default to something?
+    // Actually, usually you want to search what's in there.
+    if (address) {
+      performSearch(address)
+    }
+  }
+
+  const selectPlace = (place: any) => {
+    // Address input gets Detailed Address (ROAD ADDRESS)
+    // api_name = place.place_name (e.g. "Pangyo Station")
+    // api_address = place.road_address_name || place.address_name
+    address = place.road_address_name || place.address_name
+    apiName = place.place_name
+    apiAddress = place.road_address_name || place.address_name
+    lat = place.y ? parseFloat(place.y) : null
+    lng = place.x ? parseFloat(place.x) : null
+
+    showDropdown = false
+    searchResults = []
+  }
+
+  // Click outside to close dropdown
+  function clickOutsideAction(node: HTMLElement) {
+    const handleClick = (event: MouseEvent) => {
+      // If click is on the input, keep open (or let focus handle it)
+      // Logic: Close if click is outside the wrapper
+      if (node && !node.contains(event.target as Node)) {
+        showDropdown = false
+      }
+    }
+    document.addEventListener('click', handleClick, true)
+    return {
+      destroy() {
+        document.removeEventListener('click', handleClick, true)
+      }
+    }
+  }
 
   // Use numeric values 0 (Sun) - 6 (Sat)
-  let days: number[] = $state([])
-
-  $effect(() => {
-    if (building) {
-      name = building.name
-      address = building.address || ''
-      price = building.pricePerClean || 0
-      days = building.scheduledDays ? building.scheduledDays.split(',').map(Number) : []
-    } else {
-      name = ''
-      address = ''
-      price = 0
-      days = []
-    }
-  })
 
   const dayOptions = [
     { label: t('building.days_option.0'), value: 0 },
@@ -69,13 +129,18 @@
       id: building?.id,
       name,
       address,
+      apiName,
+      apiAddress,
+      lat,
+      lng,
       pricePerClean: price,
-      scheduledDays: days.join(',')
+      scheduledDays: days.join(','),
+      memo
     })
   }
 
   const onDeleteClick = () => {
-    if (!building) return
+    if (!building?.id) return
 
     ui.modal.show({
       component: ModalConfirm,
@@ -86,7 +151,7 @@
         cancelText: t('common.cancel'),
         isDanger: true,
         onConfirm: async () => {
-          deleteMutation.mutate(building!.id)
+          deleteMutation.mutate(building.id!)
         }
       }
     })
@@ -111,7 +176,7 @@
     <!-- ... name/address inputs ... -->
     <div>
       <label for="name" class="text-base-content mb-2 block text-sm font-medium"
-        >{t('building.name')}</label
+        >{t('building.name')} <span class="text-red-500">*</span></label
       >
       <input
         type="text"
@@ -125,12 +190,42 @@
       <label for="address" class="text-base-content mb-2 block text-sm font-medium"
         >{t('building.address')}</label
       >
-      <input
-        type="text"
-        bind:value={address}
-        placeholder={t('building.placeholder.address')}
-        class="border-base bg-base-100 text-base-content placeholder:text-sub-content w-full rounded-xl border px-4 py-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-      />
+      <div class="relative" use:clickOutsideAction>
+        <input
+          type="text"
+          bind:value={address}
+          oninput={handleAddressInput}
+          onclick={handleAddressClick}
+          placeholder={t('building.placeholder.address')}
+          class="border-base bg-base-100 text-base-content placeholder:text-sub-content w-full rounded-xl border px-4 py-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+          autocomplete="off"
+        />
+        {#if showDropdown && searchResults.length > 0}
+          <div
+            class="border-base bg-base-100 absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-auto rounded-xl border shadow-xl"
+          >
+            {#each searchResults as place}
+              <button
+                type="button"
+                class="text-base-content flex w-full flex-col items-start px-4 py-3 text-left text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                onclick={() => selectPlace(place)}
+              >
+                <div class="text-base-content font-bold">
+                  {place.place_name}
+                </div>
+                <div class="text-sub-content truncate text-xs">
+                  {place.road_address_name || place.address_name}
+                </div>
+              </button>
+            {/each}
+          </div>
+        {/if}
+      </div>
+      {#if apiName}
+        <div class="mt-2 px-1">
+          <BuildingAddress building={{ apiName, apiAddress, lat, lng }} />
+        </div>
+      {/if}
     </div>
 
     <div>
@@ -158,6 +253,19 @@
       </div>
     </div>
 
+    <div>
+      <label for="memo" class="text-base-content mb-2 block text-sm font-medium"
+        >{t('building.memo')}</label
+      >
+      <textarea
+        id="memo"
+        bind:value={memo}
+        placeholder={t('building.placeholder.memo')}
+        rows="3"
+        class="border-base bg-base-100 text-base-content placeholder:text-sub-content w-full resize-none rounded-xl border px-4 py-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+      ></textarea>
+    </div>
+
     <div class="mt-6 flex gap-3">
       {#if building}
         <button
@@ -166,13 +274,12 @@
           class="btn-danger flex-1"
           disabled={deleteMutation.isPending}
         >
-          <Trash2 size={18} />
-          {t('common.delete')}
+          <Trash2 size={20} class="mx-auto" />
         </button>
       {/if}
       <button
         type="submit"
-        class="btn-primary flex-[2]"
+        class="btn-primary flex-1 rounded-xl"
         disabled={!name || upsertMutation.isPending}
       >
         {building ? t('common.edit') : t('common.add')}

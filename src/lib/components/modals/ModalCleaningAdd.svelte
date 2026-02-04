@@ -1,29 +1,53 @@
 <script lang="ts">
-  import { X, Sparkles } from 'lucide-svelte'
+  import { X, Sparkles, Trash2 } from 'lucide-svelte'
   import { ui } from '$lib/store/ui.svelte'
   import { t } from '$lib/i18n'
   import dayjs from 'dayjs'
   import Dropdown from '$lib/components/ui/Dropdown.svelte'
-  import { useCreateCleaningLog, useUpdateCleaningLog } from '$lib/hooks/useCleaningLogs'
+  import {
+    useCreateCleaningLog,
+    useUpdateCleaningLog,
+    useDeleteCleaningLog
+  } from '$lib/hooks/useCleaningLogs'
   import FormPrice from '$lib/components/ui/FormPrice.svelte'
   import { priceWithSign } from '$lib/utils/format'
+  import ModalConfirm from './ModalConfirm.svelte'
+  import type { Building, CleaningLog, CleaningLogUpsert } from '$lib/types'
+  import BuildingAddress from '$lib/components/ui/BuildingAddress.svelte'
 
   interface Props {
-    buildings: any[] // passed from parent
-    log?: any // Optional log for editing
+    buildings: Building[]
+    log?: CleaningLog
   }
 
   let { buildings, log }: Props = $props()
 
   const createMutation = useCreateCleaningLog()
   const updateMutation = useUpdateCleaningLog()
+  const deleteMutation = useDeleteCleaningLog()
+
+  const handleDelete = () => {
+    if (!log?.id) return
+    ui.modal.show({
+      component: ModalConfirm,
+      props: {
+        title: t('cleaning.delete_confirm.title'),
+        message: t('cleaning.delete_confirm.message'),
+        isDanger: true,
+        confirmText: t('common.delete'),
+        onConfirm: async () => {
+          deleteMutation.mutate(log.id)
+        }
+      }
+    })
+  }
 
   // Initialize state
-  let selectedBuildingId = $state<number | null>(log?.building.id || null)
+  let selectedBuildingId = $state<number | null>(log?.building?.id || null)
   let earnedAmount = $state<number>(log?.earnedAmount || 0)
 
   // Track previous building to prevent overwriting earnedAmount on init
-  let previousBuildingId = $state<number | null>(log?.building.id || null)
+  let previousBuildingId = $state<number | null>(log?.building?.id || null)
 
   // Default to today or log date
   let date = $state(log ? dayjs(log.cleanStart).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'))
@@ -39,7 +63,7 @@
         return {
           value: b.id,
           label: b.name,
-          address: b.address,
+          building: b,
           price: b.pricePerClean,
           isToday
         }
@@ -66,9 +90,10 @@
     if (!selectedBuildingId || !date || !time) return
 
     const cleanStart = dayjs(`${date} ${time}`).toISOString()
-    const payload = {
+    const payload: CleaningLogUpsert = {
       buildingId: selectedBuildingId,
       cleanStart,
+      cleanEnd: cleanStart, // Default same as start
       earnedAmount,
       status: 'completed'
     }
@@ -120,10 +145,14 @@
               {/if}
             </div>
 
-            <div class="flex items-center gap-2 text-xs text-gray-500">
-              <span>{opt.address || t('building.placeholder.address')}</span>
+            <div class="flex w-full items-center justify-between">
+              <div class="min-w-0 flex-1">
+                <BuildingAddress building={opt.building} />
+              </div>
               {#if opt.price}
-                <span>• {priceWithSign(opt.price)}</span>
+                <span class="ml-2 shrink-0 text-xs text-gray-500">
+                  {priceWithSign(opt.price)}
+                </span>
               {/if}
             </div>
           </div>
@@ -139,7 +168,7 @@
       <input
         type="date"
         bind:value={date}
-        class="w-full rounded-xl border border-gray-200 px-4 py-3 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+        class="border-base bg-base-100 text-base-content w-full rounded-xl border px-4 py-3 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
       />
     </div>
 
@@ -151,19 +180,51 @@
       <input
         type="time"
         bind:value={time}
-        class="w-full rounded-xl border border-gray-200 px-4 py-3 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+        class="border-base bg-base-100 text-base-content w-full rounded-xl border px-4 py-3 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
       />
     </div>
 
     <!-- Earned Amount -->
     <div>
-      <FormPrice bind:value={earnedAmount} label={t('home.monthly_revenue')} id="earned_amount" />
+      <FormPrice bind:value={earnedAmount} label={t('home.earned_amount')} id="earned_amount" />
+
+      {#if selectedBuildingId}
+        {@const selectedBuilding = buildings.find((b) => b.id === selectedBuildingId)}
+        {#if selectedBuilding?.pricePerClean}
+          {@const diff = earnedAmount - selectedBuilding.pricePerClean}
+          {#if diff < 0}
+            <div class="mt-2 text-right text-xs font-bold text-red-500">
+              미수금: {priceWithSign(Math.abs(diff))}
+              <span class="ml-1 font-normal text-gray-400">
+                (청소 단가: {priceWithSign(selectedBuilding.pricePerClean)})
+              </span>
+            </div>
+          {:else if diff > 0}
+            <div class="mt-2 text-right text-xs font-bold text-indigo-500">
+              초과 수금: {priceWithSign(diff)}
+              <span class="ml-1 font-normal text-gray-400">
+                (청소 단가: {priceWithSign(selectedBuilding.pricePerClean)})
+              </span>
+            </div>
+          {/if}
+        {/if}
+      {/if}
     </div>
 
-    <div class="mt-6">
+    <div class="mt-6 flex gap-3">
+      {#if log}
+        <button
+          type="button"
+          onclick={handleDelete}
+          class="btn-danger flex-1"
+          disabled={deleteMutation.isPending}
+        >
+          <Trash2 size={20} class="mx-auto" />
+        </button>
+      {/if}
       <button
         type="submit"
-        class="btn-primary w-full"
+        class="btn-primary flex-[2]"
         disabled={!selectedBuildingId || !date || !time}
       >
         {log ? t('common.save') : t('common.add')}

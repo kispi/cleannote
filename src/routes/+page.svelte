@@ -4,7 +4,7 @@
   import { fade, fly } from 'svelte/transition'
 </script>
 
-<div class="flex min-h-screen flex-col items-center justify-between bg-white px-6 py-12">
+<div class="page-home flex min-h-screen flex-col items-center justify-between bg-white px-6 py-12">
   <!-- Hero Section -->
   <div class="mt-12 flex flex-col items-center text-center">
     <div

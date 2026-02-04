@@ -21,7 +21,6 @@
 
 ## Roadmap
 - [ ] **Cleaning Log Calendar Dashboard**: Visualize cleaning history in a calendar view.
-- [ ] **Kakao Map API**: Use Kakao Map API to find correct building geometry.
 - [ ] **Advanced Statistics**: Detailed revenue and performance charts.
 - [ ] **User Roles**: Admin vs Cleaner roles.
 

@@ -12,13 +12,13 @@ export default {
   },
   home: {
     greeting: '{name}님, 안녕하세요!',
+    earned_amount: '수령액',
     monthly_revenue: '이번 달 수익',
     today_quests: '오늘의 청소',
     other_quests: '그 외 건물',
     no_quests: '오늘 예정된 청소가 없습니다.',
     completed: '완료',
     pending: '대기',
-    recent_logs: '최근 청소 기록 (20건)',
     no_logs_title: '아직 기록이 없어요',
     no_logs_message: '청소 기록을 추가하여 수익을 관리해보세요!'
   },
@@ -37,23 +37,24 @@ export default {
   },
   building: {
     manage: '내 건물 관리',
-    total: '총 {count}개 건물을 관리하고 있어요.',
     add: '새 건물 추가',
     edit: '건물 수정',
     name: '건물 이름',
     address: '주소 (선택)',
     price: '1회 청소 단가',
     days: '청소 요일',
+    memo: '비고',
     placeholder: {
-        name: '예: 강남 빌라 101호',
-        address: '상세 주소 입력'
+      name: '예: 강남 빌라 101호',
+      address: '상세 주소 입력',
+      memo: '건물에 대한 참고사항을 입력하세요'
     },
     days_option: {
-        0: '일', 1: '월', 2: '화', 3: '수', 4: '목', 5: '금', 6: '토'
+      0: '일', 1: '월', 2: '화', 3: '수', 4: '목', 5: '금', 6: '토'
     },
-    confirm_delete: {
-        title: '건물 삭제',
-        message: '정말 이 건물을 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.'
+    delete_confirm: {
+      title: '건물 삭제',
+      message: '정말 이 건물을 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.'
     }
   },
   settings: {
@@ -70,18 +71,21 @@ export default {
     terms: '이용약관',
     logout: '로그아웃',
     theme_options: {
-        light: '라이트',
-        dark: '다크'
+      light: '라이트',
+      dark: '다크'
     },
     language_options: {
-        ko: '한국어',
-        en: '영어'
+      ko: '한국어',
+      en: '영어'
     },
     logout_confirm: {
       title: '로그아웃',
       message: '정말 로그아웃 하시겠습니까?',
       confirm: '로그아웃'
     }
+  },
+  navigation: {
+    title: '지도 앱 선택'
   },
   common: {
     save: '저장하기',
@@ -92,10 +96,10 @@ export default {
     confirm: '확인',
     unit_won: '₩',
     toast: {
-        saved: '저장되었습니다.',
-        added: '추가되었습니다.',
-        deleted: '삭제되었습니다.',
-        error: '오류가 발생했습니다.'
+      saved: '저장되었습니다.',
+      added: '추가되었습니다.',
+      deleted: '삭제되었습니다.',
+      error: '오류가 발생했습니다.'
     },
     date: '날짜',
     time: '시간'

@@ -8,9 +8,11 @@
   import ModalCleaningAdd from '$lib/components/modals/ModalCleaningAdd.svelte'
   import ModalConfirm from '$lib/components/modals/ModalConfirm.svelte'
   import { useRevenue } from '$lib/hooks/useRevenue'
-  import { useBuildings } from '$lib/hooks/useBuildings'
+  import { useAllBuildings } from '$lib/hooks/useBuildings'
   import { useCleaningLogs, useDeleteCleaningLog } from '$lib/hooks/useCleaningLogs'
   import { priceWithSign } from '$lib/utils/format'
+  import BuildingAddress from '$lib/components/ui/BuildingAddress.svelte'
+  import InfiniteScroll from '$lib/components/ui/InfiniteScroll.svelte'
 
   dayjs.locale('ko')
 
@@ -20,9 +22,12 @@
   const currentMonth = dayjs().format('YYYY-MM')
 
   const revenueQuery = useRevenue(currentMonth)
-  const buildingsQuery = useBuildings()
-  const logsQuery = useCleaningLogs(20)
+  const buildingsQuery = useAllBuildings()
+  const logsQuery = useCleaningLogs()
   const deleteMutation = useDeleteCleaningLog()
+
+  // Flatten pages into a single array
+  let allLogs = $derived((logsQuery.data?.pages.flatMap((page: any) => page.data) || []) as any[])
 
   const handleDelete = (log: any) => {
     ui.modal.show({
@@ -38,11 +43,24 @@
       }
     })
   }
+
+  // Group logs by date
+  let groupedLogs = $derived(
+    allLogs.reduce(
+      (acc: Record<string, any[]>, log: any) => {
+        const date = dayjs(log.cleanStart).format('YYYY-MM-DD')
+        if (!acc[date]) acc[date] = []
+        acc[date].push(log)
+        return acc
+      },
+      {} as Record<string, any[]>
+    )
+  )
 </script>
 
-<div class="p-6 pb-24">
-  <!-- Header -->
-  <header class="mb-6">
+<div class="page-app-home flex h-full flex-col bg-gray-50 dark:bg-gray-900">
+  <!-- Sticky Header -->
+  <header class="bg-gray-50 p-6 pb-4 dark:bg-gray-900">
     <div class="flex items-start justify-between">
       <div>
         <h1 class="text-base-content text-2xl font-bold">
@@ -60,95 +78,159 @@
         </p>
       </div>
     </div>
+
+    <!-- Add Record Action -->
+    <button
+      class="btn-primary mt-6 w-full rounded-xl shadow-lg active:scale-[0.98] dark:shadow-none"
+      onclick={() =>
+        ui.modal.show({
+          component: ModalCleaningAdd,
+          props: { buildings: buildingsQuery.data || [] },
+          options: { preventCloseOnClickBackdrop: true }
+        })}
+    >
+      <Plus />
+      {t('cleaning.add_record')}
+    </button>
   </header>
 
-  <!-- Add Record Action -->
-  <button
-    class="btn-primary mb-8 w-full rounded-xl shadow-lg active:scale-[0.98] dark:shadow-none"
-    onclick={() =>
-      ui.modal.show({
-        component: ModalCleaningAdd,
-        props: { buildings: buildingsQuery.data || [] },
-        options: { preventCloseOnClickBackdrop: true }
-      })}
-  >
-    <Plus />
-    {t('cleaning.add_record')}
-  </button>
-
-  <!-- Section: Recent Logs -->
-  <section>
-    <div class="mb-4 flex items-center justify-between">
-      <h3 class="text-base-content text-lg font-bold">{t('home.recent_logs')}</h3>
-    </div>
-
-    {#if logsQuery.isLoading}
-      <div class="space-y-3">
-        {#each Array(3) as _}
-          <div class="bg-base-200 h-20 w-full animate-pulse rounded-xl"></div>
-        {/each}
-      </div>
-    {:else if logsQuery.data?.length === 0}
-      <div
-        class="bg-base-200 flex flex-col items-center justify-center rounded-xl border border-gray-100 py-12 text-center dark:border-gray-800"
-      >
-        <div
-          class="mb-3 rounded-full bg-blue-100 p-4 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
-        >
-          <CalendarClock size={32} />
+  <!-- Scrollable Content -->
+  <div class="flex-1 overflow-y-auto px-6 pb-24">
+    <!-- Section: Recent Logs -->
+    <section>
+      {#if logsQuery.isLoading}
+        <div class="space-y-3">
+          {#each Array(3) as _}
+            <div class="bg-base-200 h-20 w-full animate-pulse rounded-xl"></div>
+          {/each}
         </div>
-        <p class="text-base-content font-bold">{t('home.no_logs_title')}</p>
-        <p class="text-sub-content text-sm">{t('home.no_logs_message')}</p>
-      </div>
-    {:else}
-      <div class="space-y-3">
-        {#each logsQuery.data as log (log.id)}
-          <button
-            class="card group flex w-full items-center justify-between text-left transition-all active:scale-[0.99]"
-            onclick={() =>
-              ui.modal.show({
-                component: ModalCleaningAdd,
-                props: {
-                  buildings: buildingsQuery.data || [],
-                  log
-                },
-                options: { preventCloseOnClickBackdrop: true }
-              })}
+      {:else if allLogs.length === 0}
+        <div
+          class="bg-base-200 flex flex-col items-center justify-center rounded-xl border border-gray-100 py-12 text-center dark:border-gray-800"
+        >
+          <div
+            class="mb-3 rounded-full bg-blue-100 p-4 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
           >
-            <div>
-              <h4 class="text-base-content text-lg font-bold">
-                {log.building.name}
+            <CalendarClock size={32} />
+          </div>
+          <p class="text-base-content font-bold">{t('home.no_logs_title')}</p>
+          <p class="text-sub-content text-sm">{t('home.no_logs_message')}</p>
+        </div>
+      {:else}
+        <div class="space-y-6">
+          {#each Object.entries(groupedLogs).sort( (a, b) => b[0].localeCompare(a[0]) ) as [date, logs]}
+            <section>
+              <h4 class="text-sub-content mb-3 px-1 text-xs font-bold">
+                {#if date === dayjs().format('YYYY-MM-DD')}
+                  오늘
+                {:else if date === dayjs().subtract(1, 'day').format('YYYY-MM-DD')}
+                  어제
+                {:else}
+                  {dayjs(date).format('MM.DD dddd')}
+                {/if}
               </h4>
-              <p class="text-sub-content mt-0.5 text-sm">
-                {dayjs(log.cleanStart).format('MM.DD (dd)')} • {log.building.address || ''}
-              </p>
-              {#if log.earnedAmount > 0}
-                <p class="mt-1 font-bold text-blue-600 dark:text-blue-400">
-                  {priceWithSign(log.earnedAmount)}
-                </p>
-              {/if}
-            </div>
+              <div class="space-y-3">
+                {#each logs as log (log.id)}
+                  {@const price = log.building.pricePerClean || 0}
+                  {@const diff = log.earnedAmount - price}
+                  {@const isUnpaid = diff < 0}
+                  {@const isOverpaid = diff > 0 && price > 0}
 
-            <div
-              role="button"
-              tabindex="0"
-              class="text-sub-content hover:bg-base-200 z-10 rounded-full p-3 transition-colors hover:text-red-500 active:scale-90 dark:hover:bg-red-900/20"
-              onclick={(e) => {
-                e.stopPropagation()
-                handleDelete(log)
-              }}
-              onkeydown={(e) => {
-                if (e.key === 'Enter') {
-                  e.stopPropagation()
-                  handleDelete(log)
-                }
-              }}
-            >
-              <Trash2 size={20} />
-            </div>
-          </button>
-        {/each}
-      </div>
-    {/if}
-  </section>
+                  <div
+                    role="button"
+                    tabindex="0"
+                    class="card group flex w-full cursor-pointer items-start justify-between text-left transition-all active:scale-[0.99]"
+                    onclick={() =>
+                      ui.modal.show({
+                        component: ModalCleaningAdd,
+                        props: {
+                          buildings: buildingsQuery.data || [],
+                          log
+                        },
+                        options: { preventCloseOnClickBackdrop: true }
+                      })}
+                    onkeydown={(e) => {
+                      if (e.key === 'Enter') {
+                        ui.modal.show({
+                          component: ModalCleaningAdd,
+                          props: {
+                            buildings: buildingsQuery.data || [],
+                            log
+                          },
+                          options: { preventCloseOnClickBackdrop: true }
+                        })
+                      }
+                    }}
+                  >
+                    <div class="mr-3 flex min-w-0 flex-1 flex-col">
+                      <div class="flex items-center justify-between gap-2">
+                        <h4 class="text-base-content truncate text-lg font-bold">
+                          {log.building.name}
+                        </h4>
+                      </div>
+                      <div class="mt-0.5 w-full">
+                        <BuildingAddress building={log.building} />
+                      </div>
+
+                      {#if isUnpaid}
+                        <div class="mt-1 flex flex-col items-start">
+                          <span class="font-bold text-red-500">
+                            {priceWithSign(log.earnedAmount)}
+                          </span>
+                          <span
+                            class="rounded bg-red-50 px-1.5 py-0.5 text-xs font-medium text-red-500 dark:bg-red-900/30"
+                          >
+                            미수 {priceWithSign(Math.abs(diff))}
+                          </span>
+                        </div>
+                      {:else if isOverpaid}
+                        <div class="mt-1 flex flex-col items-start">
+                          <span class="font-bold text-indigo-500">
+                            {priceWithSign(log.earnedAmount)}
+                          </span>
+                          <span
+                            class="rounded bg-indigo-50 px-1.5 py-0.5 text-xs font-medium text-indigo-500 dark:bg-indigo-900/30"
+                          >
+                            초과 {priceWithSign(diff)}
+                          </span>
+                        </div>
+                      {:else if log.earnedAmount > 0}
+                        <p class="mt-1 font-bold text-blue-600 dark:text-blue-400">
+                          {priceWithSign(log.earnedAmount)}
+                        </p>
+                      {/if}
+                    </div>
+
+                    <div
+                      role="button"
+                      tabindex="0"
+                      class="text-sub-content hover:bg-base-200 -mt-2 -mr-2 rounded-full p-2 transition-colors hover:text-red-500 active:scale-90 dark:hover:bg-red-900/20"
+                      onclick={(e) => {
+                        e.stopPropagation()
+                        handleDelete(log)
+                      }}
+                      onkeydown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.stopPropagation()
+                          handleDelete(log)
+                        }
+                      }}
+                    >
+                      <Trash2 size={20} />
+                    </div>
+                  </div>
+                {/each}
+              </div>
+            </section>
+          {/each}
+
+          <InfiniteScroll
+            hasMore={logsQuery.hasNextPage}
+            isLoading={logsQuery.isFetchingNextPage}
+            fetchMore={() => logsQuery.fetchNextPage()}
+          />
+        </div>
+      {/if}
+    </section>
+  </div>
 </div>

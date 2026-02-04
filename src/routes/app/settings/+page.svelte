@@ -37,7 +37,7 @@
   }
 </script>
 
-<div class="p-6 pb-24">
+<div class="page-app-settings p-6 pb-24">
   <header class="mb-8">
     <h1 class="text-base-content text-2xl font-bold">{t('settings.title')}</h1>
   </header>

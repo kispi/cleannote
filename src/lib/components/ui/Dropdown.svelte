@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ChevronDown, Check } from 'lucide-svelte'
+  import { ChevronDown } from 'lucide-svelte'
   import { slide } from 'svelte/transition'
 
   interface Option {
@@ -52,10 +52,12 @@
   }
 </script>
 
-<div class="{className} relative" use:clickOutsideAction>
+<div class="dropdown {className} relative" use:clickOutsideAction>
   <button
     type="button"
-    class="border-base bg-base-100 focus:ring-primary flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition-all focus:border-blue-500 focus:ring-1 focus:outline-none active:scale-[0.99]"
+    class="border-base bg-base-100 flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none {isOpen
+      ? 'border-blue-500 ring-1 ring-blue-500'
+      : ''}"
     onclick={toggle}
   >
     <span class={!value ? 'text-sub-content' : 'text-base-content'}>
@@ -85,10 +87,6 @@
             {@render renderOption(opt)}
           {:else}
             <span>{opt.label}</span>
-          {/if}
-
-          {#if value === opt.value}
-            <Check size={16} class="text-blue-600 dark:text-blue-400" />
           {/if}
         </button>
       {/each}

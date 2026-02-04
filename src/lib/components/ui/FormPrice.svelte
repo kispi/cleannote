@@ -11,7 +11,7 @@
   let { value = $bindable(), label, id = 'price', placeholder = '0' }: Props = $props()
 </script>
 
-<div>
+<div class="form-price">
   <label for={id} class="text-base-content mb-2 block text-sm font-medium">
     {label}
   </label>
@@ -20,7 +20,7 @@
       type="number"
       {id}
       bind:value
-      class="w-full rounded-xl border border-gray-200 px-4 py-3 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+      class="border-base bg-base-100 text-base-content w-full rounded-xl border px-4 py-3 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
       {placeholder}
       onkeydown={(e) => {
         if (e.key === 'ArrowUp') {

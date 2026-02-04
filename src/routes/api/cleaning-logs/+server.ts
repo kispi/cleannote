@@ -51,9 +51,19 @@ export const GET = async ({ url, locals }) => {
   }
 
   const limit = Number(url.searchParams.get('limit')) || 20
+  const page = Number(url.searchParams.get('page')) || 1
+  const offset = (page - 1) * limit
+  
+  // Fetch total count
+  const totalResult = await db
+    .select({ count: cleaningLogs.id })
+    .from(cleaningLogs)
+    .innerJoin(buildings, eq(cleaningLogs.building_id, buildings.id))
+    .where(eq(buildings.user_id, locals.user.id))
+  
+  const total = totalResult.length
   
   // Fetch logs with building info
-  // ordered by clean_start desc
   const logs = await db
     .select({
       id: cleaningLogs.id,
@@ -65,6 +75,10 @@ export const GET = async ({ url, locals }) => {
         id: buildings.id,
         name: buildings.name,
         address: buildings.address,
+        apiName: buildings.api_name,
+        apiAddress: buildings.api_address,
+        lat: buildings.lat,
+        lng: buildings.lng,
         pricePerClean: buildings.price_per_clean
       }
     })
@@ -73,6 +87,9 @@ export const GET = async ({ url, locals }) => {
     .where(eq(buildings.user_id, locals.user.id))
     .orderBy(desc(cleaningLogs.clean_start))
     .limit(limit)
+    .offset(offset)
 
-  return json(logs)
+  const nextPage = offset + limit < total ? page + 1 : null
+
+  return json({ data: logs, total, nextPage })
 }

@@ -17,14 +17,14 @@
 </script>
 
 <!-- Logged-in specific layout (e.g. Navigation Bar) could go here -->
-<div class="flex min-h-screen flex-col">
-  <div class="flex-1">
+<div class="layout-app flex h-[100dvh] flex-col overflow-hidden bg-gray-50 dark:bg-gray-900">
+  <div class="relative flex-1 overflow-hidden">
     {@render children?.()}
   </div>
 
   <!-- Bottom Navigation -->
   <nav
-    class="sticky bottom-0 z-50 flex w-full items-center justify-between rounded-t-3xl bg-white/95 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] backdrop-blur-md dark:border-t dark:border-gray-800 dark:bg-gray-900/95"
+    class="flex w-full items-center justify-between rounded-t-3xl bg-white/95 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] backdrop-blur-md dark:border-t dark:border-gray-800 dark:bg-gray-900/95"
   >
     <a
       href="/app"

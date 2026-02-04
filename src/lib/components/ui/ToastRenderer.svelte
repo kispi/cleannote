@@ -27,13 +27,12 @@
 </script>
 
 <div
-  class="pointer-events-none fixed left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2
-  {ui.toast.items[0]?.position === 'top-center' ? 'top-4' : 'bottom-8'}"
+  class="toast-renderer pointer-events-none fixed top-4 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2"
 >
   {#each ui.toast.items as item (item.id)}
     <div
       class="bg-base-100 pointer-events-auto relative flex min-w-[300px] items-center gap-3 overflow-hidden rounded-lg p-4 shadow-lg ring-1 ring-black/5 dark:ring-white/10"
-      transition:fly={{ y: item.position === 'top-center' ? -20 : 20, duration: 300 }}
+      transition:fly={{ y: -20, duration: 300 }}
     >
       <!-- Colored Strip -->
       <div

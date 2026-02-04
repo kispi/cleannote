@@ -21,6 +21,7 @@ trigger: always_on
 - **General:** 2 spaces indent, no semicolon, always try single quote first when possible.
 - **Framework:** SvelteKit (Latest) + Svelte 5 Runes (`$state`, `$derived`, `$effect`).
 - **Styling:** Tailwind CSS.
+- **Avoid using 'any':** While it's almost impossible not to use any 'any', avoid using it when possible.
 - **Date Handling:** `dayjs` only. (No `moment`, avoid raw `Date` complexity).
 - **State Management:**
   - **Server:** TanStack Query.
