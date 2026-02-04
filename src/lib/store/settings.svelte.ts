@@ -35,6 +35,14 @@ const createSettingsState = () => {
       try {
         const parsed = JSON.parse(stored)
         state = { ...DEFAULT_SETTINGS, ...parsed }
+
+        // Validate locale
+        const supportedLocales: Locale[] = ['ko', 'en']
+        if (!supportedLocales.includes(state.locale)) {
+          state.locale = DEFAULT_SETTINGS.locale
+          localStorage.setItem('settings', JSON.stringify(state))
+        }
+
         // Apply initial theme
         if (state.theme === 'dark') {
           document.documentElement.classList.add('dark')
