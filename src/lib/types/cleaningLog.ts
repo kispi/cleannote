@@ -8,6 +8,7 @@ export interface CleaningLog {
   cleanEnd: string
   status: 'completed' | 'skipped'
   earnedAmount: number
+  buildingSnapshot?: any // JSON stored in DB
   createdAt: string
   updatedAt: string
   deletedAt: string | null

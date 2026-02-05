@@ -71,8 +71,24 @@
       .sort((a, b) => Number(b.isToday) - Number(a.isToday))
   )
 
+  // Use snapshot if available
+  let snapshotPrice = $state<number | undefined>(undefined)
+
   $effect(() => {
-    if (selectedBuildingId && selectedBuildingId !== previousBuildingId) {
+    if (log && log.buildingSnapshot) {
+      // If snapshot exists, trust it for price logic
+      snapshotPrice = log.buildingSnapshot.pricePerClean
+    } else if (selectedBuildingId) {
+      // Fallback to current building price
+      const b = buildings.find((b) => b.id === selectedBuildingId)
+      snapshotPrice = b?.pricePerClean || undefined
+    }
+  })
+
+  $effect(() => {
+    // Only update earnedAmount on initial selection or change if NOT in edit mode with existing value?
+    // User logic: "Lock building in edit mode".
+    if (!log && selectedBuildingId && selectedBuildingId !== previousBuildingId) {
       previousBuildingId = selectedBuildingId
       const b = buildings.find((b) => b.id === selectedBuildingId)
       if (b) {
@@ -126,38 +142,49 @@
       <label for="building_id" class="text-base-content mb-2 block text-sm font-medium"
         >{t('building.name')}</label
       >
-      <Dropdown
-        bind:value={selectedBuildingId}
-        options={buildingOptions}
-        placeholder={t('building.name')}
-      >
-        {#snippet renderOption(opt)}
-          <div class="flex w-full flex-col items-start gap-1 py-1">
-            <div class="flex w-full items-center justify-between">
-              <span class="text-base-content font-medium">{opt.label}</span>
-              {#if opt.isToday}
-                <span
-                  class="flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-600 dark:bg-blue-900 dark:text-blue-300"
-                >
-                  <Sparkles size={10} />
-                  TODAY
-                </span>
-              {/if}
-            </div>
-
-            <div class="flex w-full items-center justify-between">
-              <div class="min-w-0 flex-1">
-                <BuildingAddress building={opt.building} />
+      {#if log && log.buildingSnapshot}
+        <!-- Read-only view for Snapshot -->
+        <div
+          class="border-base bg-base-100/50 text-base-content w-full rounded-xl border px-4 py-3"
+        >
+          <div class="font-bold">{log.buildingSnapshot.name}</div>
+          <div class="text-xs text-gray-500">{log.buildingSnapshot.address || ''}</div>
+        </div>
+      {:else}
+        <Dropdown
+          bind:value={selectedBuildingId}
+          options={buildingOptions}
+          placeholder={t('building.name')}
+          disabled={!!log}
+        >
+          {#snippet renderOption(opt)}
+            <div class="flex w-full flex-col items-start gap-1 py-1">
+              <div class="flex w-full items-center justify-between">
+                <span class="text-base-content font-medium">{opt.label}</span>
+                {#if opt.isToday}
+                  <span
+                    class="flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-600 dark:bg-blue-900 dark:text-blue-300"
+                  >
+                    <Sparkles size={10} />
+                    TODAY
+                  </span>
+                {/if}
               </div>
-              {#if opt.price}
-                <span class="ml-2 shrink-0 text-xs text-gray-500">
-                  {priceWithSign(opt.price)}
-                </span>
-              {/if}
+
+              <div class="flex w-full items-center justify-between">
+                <div class="min-w-0 flex-1">
+                  <BuildingAddress building={opt.building} />
+                </div>
+                {#if opt.price}
+                  <span class="ml-2 shrink-0 text-xs text-gray-500">
+                    {priceWithSign(opt.price)}
+                  </span>
+                {/if}
+              </div>
             </div>
-          </div>
-        {/snippet}
-      </Dropdown>
+          {/snippet}
+        </Dropdown>
+      {/if}
     </div>
 
     <!-- Date -->
@@ -189,21 +216,20 @@
       <FormPrice bind:value={earnedAmount} label={t('home.earned_amount')} id="earned_amount" />
 
       {#if selectedBuildingId}
-        {@const selectedBuilding = buildings.find((b) => b.id === selectedBuildingId)}
-        {#if selectedBuilding?.pricePerClean}
-          {@const diff = earnedAmount - selectedBuilding.pricePerClean}
+        {#if snapshotPrice}
+          {@const diff = earnedAmount - snapshotPrice}
           {#if diff < 0}
             <div class="mt-2 text-right text-xs font-bold text-red-500">
               미수금: {priceWithSign(Math.abs(diff))}
               <span class="ml-1 font-normal text-gray-400">
-                (청소 단가: {priceWithSign(selectedBuilding.pricePerClean)})
+                (청소 단가: {priceWithSign(snapshotPrice)})
               </span>
             </div>
           {:else if diff > 0}
             <div class="mt-2 text-right text-xs font-bold text-indigo-500">
               초과 수금: {priceWithSign(diff)}
               <span class="ml-1 font-normal text-gray-400">
-                (청소 단가: {priceWithSign(selectedBuilding.pricePerClean)})
+                (청소 단가: {priceWithSign(snapshotPrice)})
               </span>
             </div>
           {/if}
@@ -224,7 +250,7 @@
       {/if}
       <button
         type="submit"
-        class="btn-primary flex-[2]"
+        class="btn-primary flex-1"
         disabled={!selectedBuildingId || !date || !time}
       >
         {log ? t('common.save') : t('common.add')}

@@ -35,6 +35,7 @@ trigger: always_on
   - Table names **MUST be Plural** (e.g., `users`, `buildings`).
   - Columns: `snake_case`.
   - TS Properties: `camelCase`.
+  - JSON Fields: **MUST be camelCase**. No `snake_case` in JSON data stored in DB or used in App.
 - **Base Model Structure:**
   - `id`: BigInt, Autoincrement, Primary Key.
   - `created_at`: Timestamp, default `CURRENT_TIMESTAMP`.

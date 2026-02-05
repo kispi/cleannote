@@ -14,7 +14,7 @@ export const locale = settings.locale
 
 export const t = (key: TranslationKey, vars: Record<string, any> = {}) => {
   const keys = key.split('.')
-  let value: any = translations[locale]
+  let value: any = translations[settings.locale] // Read reactive state directly
   
   for (const k of keys) {
     if (value && typeof value === 'object' && k in value) {

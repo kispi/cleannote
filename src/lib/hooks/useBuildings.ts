@@ -27,7 +27,10 @@ export const useAllBuildings = () => createQuery<Building[]>(() => ({
   }
 }))
 
-export const useUpsertBuilding = () => {
+export const useUpsertBuilding = (options?: {
+  suppressSuccessToast?: boolean
+  suppressClose?: boolean
+}) => {
   const queryClient = useQueryClient()
   
   return createMutation(() => ({
@@ -51,11 +54,18 @@ export const useUpsertBuilding = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['buildings'] })
-      ui.toast.show({
-        text: t('common.toast.saved'),
-        type: 'success'
-      })
-      ui.modal.close()
+      
+      if (!options?.suppressSuccessToast) {
+        ui.toast.show({
+          text: t('common.toast.saved'),
+          type: 'success'
+        })
+      }
+      
+      if (!options?.suppressClose) {
+        ui.modal.close()
+      }
+      
       invalidateAll()
     },
     onError: (error: any) => {

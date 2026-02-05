@@ -67,12 +67,17 @@
       <LoginButton />
     </div>
 
-    <!-- <div class="flex flex-col items-center gap-2">
+    <div class="flex flex-col items-center gap-2">
       <p class="text-center text-xs text-gray-400">
-        로그인 시 <span class="underline underline-offset-2">이용약관</span> 및
-        <span class="underline underline-offset-2">개인정보처리방침</span>에 동의하게 됩니다.
+        로그인 시 <a href="/policy/terms" class="underline underline-offset-2 hover:text-gray-600"
+          >이용약관</a
+        >
+        및
+        <a href="/policy/privacy" class="underline underline-offset-2 hover:text-gray-600"
+          >개인정보처리방침</a
+        >에 동의하게 됩니다.
       </p>
-    </div> -->
+    </div>
   </div>
 </div>
 

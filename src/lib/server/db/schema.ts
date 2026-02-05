@@ -7,7 +7,8 @@ import {
   int,
   boolean,
   mysqlEnum,
-  double
+  double,
+  json
 } from 'drizzle-orm/mysql-core'
 import { sql } from 'drizzle-orm'
 
@@ -82,6 +83,7 @@ export const cleaningLogs = mysqlTable('cleaning_logs', {
   clean_end: timestamp('clean_end').notNull().defaultNow(),
   status: varchar('status', { length: 20 }).notNull().default('completed'), // completed, skipped
   earned_amount: int('earned_amount').notNull().default(0),
+  building_snapshot: json('building_snapshot'),
 
   created_at: timestamp('created_at').notNull().defaultNow(),
   updated_at: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),

@@ -37,7 +37,7 @@
   }
 </script>
 
-<div class="page-app-settings p-6 pb-24">
+<div class="page-app-settings h-full overflow-y-auto p-6 pb-24">
   <header class="mb-8">
     <h1 class="text-base-content text-2xl font-bold">{t('settings.title')}</h1>
   </header>
@@ -135,12 +135,20 @@
         <span class="text-base-content font-medium">{t('settings.backup')}</span>
         <ChevronRight size={18} class="text-sub-content" />
       </button>
-      <button
+      <a
+        href="/policy/terms"
         class="card flex w-full items-center justify-between transition-all active:scale-[0.98]"
       >
         <span class="text-base-content font-medium">{t('settings.terms')}</span>
         <ChevronRight size={18} class="text-sub-content" />
-      </button>
+      </a>
+      <a
+        href="/policy/privacy"
+        class="card flex w-full items-center justify-between transition-all active:scale-[0.98]"
+      >
+        <span class="text-base-content font-medium">{t('settings.privacy')}</span>
+        <ChevronRight size={18} class="text-sub-content" />
+      </a>
     </div>
   </div>
 

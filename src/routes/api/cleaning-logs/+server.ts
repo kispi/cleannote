@@ -16,18 +16,34 @@ export const POST = async ({ request, locals }) => {
     return json({ error: 'Missing required fields' }, { status: 400 })
   }
 
+  // Fetch building to get price and creating snapshot
+  let buildingSnapshot = null
+  let building = null
+
+  if (buildingId) {
+     const [b] = await db.select().from(buildings).where(eq(buildings.id, buildingId))
+     building = b
+     if (b) {
+       buildingSnapshot = {
+         name: b.name,
+         address: b.address,
+         pricePerClean: b.price_per_clean,
+         apiName: b.api_name,
+         apiAddress: b.api_address,
+         lat: b.lat,
+         lng: b.lng
+       }
+     }
+  }
+
+  if (!building) {
+      return json({ error: 'Building not found' }, { status: 404 })
+  }
+
   // Calculate earned amount if not provided
   let earned_amount = earnedAmount
   
   if (typeof earned_amount === 'undefined') {
-    const [building] = await db
-        .select()
-        .from(buildings)
-        .where(eq(buildings.id, buildingId))
-
-    if (!building) {
-        return json({ error: 'Building not found' }, { status: 404 })
-    }
     earned_amount = status === 'completed' ? (building.price_per_clean || 0) : 0
   }
 
@@ -39,7 +55,8 @@ export const POST = async ({ request, locals }) => {
     clean_start: start.toDate(),
     clean_end: end.toDate(),
     earned_amount,
-    status
+    status,
+    building_snapshot: buildingSnapshot
   })
 
   return json({ id: result.insertId }, { status: 201 })
@@ -71,6 +88,7 @@ export const GET = async ({ url, locals }) => {
       cleanEnd: cleaningLogs.clean_end,
       earnedAmount: cleaningLogs.earned_amount,
       status: cleaningLogs.status,
+      buildingSnapshot: cleaningLogs.building_snapshot,
       building: {
         id: buildings.id,
         name: buildings.name,

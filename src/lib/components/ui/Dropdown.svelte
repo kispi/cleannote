@@ -14,6 +14,7 @@
     placeholder?: string
     class?: string
     renderOption?: import('svelte').Snippet<[Option]>
+    disabled?: boolean
   }
 
   let {
@@ -21,13 +22,15 @@
     options,
     placeholder = 'Select...',
     class: className,
-    renderOption
+    renderOption,
+    disabled = false
   }: Props = $props()
 
   let isOpen = $state(false)
   let selectedLabel = $derived(options.find((o) => o.value === value)?.label || placeholder)
 
   function toggle() {
+    if (disabled) return
     isOpen = !isOpen
   }
 
@@ -55,9 +58,10 @@
 <div class="dropdown {className} relative" use:clickOutsideAction>
   <button
     type="button"
+    {disabled}
     class="border-base bg-base-100 flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none {isOpen
       ? 'border-blue-500 ring-1 ring-blue-500'
-      : ''}"
+      : ''} {disabled ? 'cursor-not-allowed bg-gray-100 opacity-50 dark:bg-gray-800' : ''}"
     onclick={toggle}
   >
     <span class={!value ? 'text-sub-content' : 'text-base-content'}>

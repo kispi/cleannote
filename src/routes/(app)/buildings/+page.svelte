@@ -10,6 +10,7 @@
   import { fade } from 'svelte/transition'
   import InfiniteScroll from '$lib/components/ui/InfiniteScroll.svelte'
   import BuildingAddress from '$lib/components/ui/BuildingAddress.svelte'
+  import Skeleton from '$lib/components/ui/Skeleton.svelte'
 
   const query = useBuildings()
   const deleteMutation = useDeleteBuilding()
@@ -40,7 +41,7 @@
   <header class="bg-gray-50 p-6 pb-4 dark:bg-gray-900">
     <div class="mb-6">
       <h1 class="text-base-content text-2xl font-bold">
-        {t('building.manage')} ({totalCount}개)
+        {t('building.manage')}
       </h1>
     </div>
 
@@ -141,9 +142,21 @@
           </div>
         </div>
       {:else}
-        {#if !query.isLoading}
+        {#if query.isLoading}
+          {#each Array(5) as _}
+            <div class="card w-full p-4 mb-4">
+              <div class="flex items-start gap-4">
+                <div class="flex-1 space-y-2">
+                  <Skeleton height="24px" width="60%" />
+                  <Skeleton height="16px" width="40%" />
+                  <Skeleton height="16px" width="30%" />
+                </div>
+              </div>
+            </div>
+          {/each}
+        {:else if !query.isFetching}
           <div class="text-center py-12 text-gray-400">
-            {t('building.total', { count: 0 })}
+            {t('building.empty')}
           </div>
         {/if}
       {/each}

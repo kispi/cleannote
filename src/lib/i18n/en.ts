@@ -67,7 +67,7 @@ export default {
     },
     language: 'Language',
     theme: 'Theme',
-    backup: 'Data Backup / Export',
+    backup: 'Data Backup / Export (under construction)',
     terms: 'Terms of Service',
     logout: 'Log Out',
     logout_confirm: {

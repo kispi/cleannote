@@ -6,6 +6,7 @@
   import 'dayjs/locale/ko'
   import { Trash2, Plus, CalendarClock } from 'lucide-svelte'
   import ModalCleaningAdd from '$lib/components/modals/ModalCleaningAdd.svelte'
+  import ModalBuildingAdd from '$lib/components/modals/ModalBuildingAdd.svelte'
   import ModalConfirm from '$lib/components/modals/ModalConfirm.svelte'
   import { useRevenue } from '$lib/hooks/useRevenue'
   import { useAllBuildings } from '$lib/hooks/useBuildings'
@@ -80,18 +81,34 @@
     </div>
 
     <!-- Add Record Action -->
-    <button
-      class="btn-primary mt-6 w-full rounded-xl shadow-lg active:scale-[0.98] dark:shadow-none"
-      onclick={() =>
-        ui.modal.show({
-          component: ModalCleaningAdd,
-          props: { buildings: buildingsQuery.data || [] },
-          options: { preventCloseOnClickBackdrop: true }
-        })}
-    >
-      <Plus />
-      {t('cleaning.add_record')}
-    </button>
+    <!-- Add Record Action -->
+    {#if buildingsQuery.isSuccess && buildingsQuery.data.length === 0}
+      <button
+        class="btn-primary mt-6 w-full rounded-xl shadow-lg active:scale-[0.98] dark:shadow-none"
+        onclick={() =>
+          ui.modal.show({
+            component: ModalBuildingAdd,
+            props: { isOnboarding: true },
+            options: { preventCloseOnClickBackdrop: true }
+          })}
+      >
+        <Plus />
+        {t('home.add_first_building')}
+      </button>
+    {:else}
+      <button
+        class="btn-primary mt-6 w-full rounded-xl shadow-lg active:scale-[0.98] dark:shadow-none"
+        onclick={() =>
+          ui.modal.show({
+            component: ModalCleaningAdd,
+            props: { buildings: buildingsQuery.data || [] },
+            options: { preventCloseOnClickBackdrop: true }
+          })}
+      >
+        <Plus />
+        {t('cleaning.add_record')}
+      </button>
+    {/if}
   </header>
 
   <!-- Scrollable Content -->
@@ -113,8 +130,16 @@
           >
             <CalendarClock size={32} />
           </div>
-          <p class="text-base-content font-bold">{t('home.no_logs_title')}</p>
-          <p class="text-sub-content text-sm">{t('home.no_logs_message')}</p>
+          <p class="text-base-content font-bold">
+            {buildingsQuery.data?.length === 0
+              ? t('home.no_buildings_title')
+              : t('home.no_logs_title')}
+          </p>
+          <p class="text-sub-content text-sm">
+            {buildingsQuery.data?.length === 0
+              ? t('home.no_buildings_message')
+              : t('home.no_logs_message')}
+          </p>
         </div>
       {:else}
         <div class="space-y-6">
@@ -131,7 +156,10 @@
               </h4>
               <div class="space-y-3">
                 {#each logs as log (log.id)}
-                  {@const price = log.building.pricePerClean || 0}
+                  {@const snapshot = log.buildingSnapshot}
+                  {@const price = snapshot
+                    ? snapshot.pricePerClean || 0
+                    : log.building.pricePerClean || 0}
                   {@const diff = log.earnedAmount - price}
                   {@const isUnpaid = diff < 0}
                   {@const isOverpaid = diff > 0 && price > 0}
@@ -165,11 +193,23 @@
                     <div class="mr-3 flex min-w-0 flex-1 flex-col">
                       <div class="flex items-center justify-between gap-2">
                         <h4 class="text-base-content truncate text-lg font-bold">
-                          {log.building.name}
+                          {snapshot ? snapshot.name : log.building.name}
                         </h4>
                       </div>
                       <div class="mt-0.5 w-full">
-                        <BuildingAddress building={log.building} />
+                        {#if snapshot}
+                          <BuildingAddress
+                            building={{
+                              apiName: snapshot.apiName,
+                              apiAddress: snapshot.apiAddress,
+                              address: snapshot.address,
+                              lat: snapshot.lat,
+                              lng: snapshot.lng
+                            }}
+                          />
+                        {:else}
+                          <BuildingAddress building={log.building} />
+                        {/if}
                       </div>
 
                       {#if isUnpaid}

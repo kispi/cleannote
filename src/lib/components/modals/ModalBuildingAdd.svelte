@@ -7,15 +7,20 @@
   import ModalConfirm from './ModalConfirm.svelte'
   import { createDebounce } from '$lib/utils/debounce'
   import BuildingAddress from '$lib/components/ui/BuildingAddress.svelte'
+  import ModalBuildingAdded from './ModalBuildingAdded.svelte'
   import type { BuildingUpsert } from '$lib/types/building'
 
   interface Props {
     building?: BuildingUpsert
+    isOnboarding?: boolean
   }
 
-  let { building }: Props = $props()
+  let { building, isOnboarding = false }: Props = $props()
 
-  const upsertMutation = useUpsertBuilding()
+  const upsertMutation = useUpsertBuilding({
+    suppressSuccessToast: isOnboarding,
+    suppressClose: isOnboarding
+  })
   const deleteMutation = useDeleteBuilding()
 
   let name = $state(building?.name || '')
@@ -115,7 +120,7 @@
 
   const toggleDay = (val: number) => {
     if (days.includes(val)) {
-      days = days.filter((x) => x !== val)
+      days = days.filter((x: number) => x !== val)
     } else {
       days = [...days, val].sort((a, b) => a - b)
     }
@@ -125,18 +130,32 @@
     e.preventDefault()
     if (!name) return
 
-    upsertMutation.mutate({
-      id: building?.id,
-      name,
-      address,
-      apiName,
-      apiAddress,
-      lat,
-      lng,
-      pricePerClean: price,
-      scheduledDays: days.join(','),
-      memo
-    })
+    upsertMutation.mutate(
+      {
+        id: building?.id,
+        name,
+        address,
+        apiName,
+        apiAddress,
+        lat,
+        lng,
+        pricePerClean: price,
+        scheduledDays: days.join(','),
+        memo
+      },
+      {
+        onSuccess: () => {
+          if (isOnboarding) {
+            ui.modal.close() // Close the current Add modal
+            ui.modal.show({
+              component: ModalBuildingAdded,
+              props: {},
+              options: { preventCloseOnClickBackdrop: true }
+            })
+          }
+        }
+      }
+    )
   }
 
   const onDeleteClick = () => {

@@ -20,7 +20,10 @@ export default {
     completed: '완료',
     pending: '대기',
     no_logs_title: '아직 기록이 없어요',
-    no_logs_message: '청소 기록을 추가하여 매출을 관리해보세요!'
+    no_logs_message: '청소 기록을 추가하여 매출을 관리해보세요!',
+    no_buildings_title: '건물을 등록해주세요',
+    no_buildings_message: '매출 관리를 시작하려면 건물이 필요합니다.',
+    add_first_building: '첫 건물 추가하기'
   },
   cleaning: {
     add_record: '청소 기록 추가',
@@ -31,12 +34,13 @@ export default {
     }
   },
   nav: {
-    home: '홈',
+    home: '청소 기록',
     buildings: '건물',
     settings: '설정'
   },
   building: {
     manage: '내 건물 관리',
+    empty: '아직 등록된 건물이 없습니다.',
     add: '새 건물 추가',
     edit: '건물 수정',
     name: '건물 이름',
@@ -55,7 +59,10 @@ export default {
     delete_confirm: {
       title: '건물 삭제',
       message: '정말 이 건물을 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.'
-    }
+    },
+    registration_complete: '건물 등록 완료!',
+    check_in_tab_message: '하단 메뉴의 [건물] 탭에서\n등록된 건물을 확인해보세요.',
+    go_to_list: '내 건물 보러가기'
   },
   settings: {
     title: '설정',
@@ -67,7 +74,7 @@ export default {
     },
     language: '언어',
     theme: '테마',
-    backup: '데이터 백업',
+    backup: '데이터 백업 (준비중)',
     terms: '이용약관',
     logout: '로그아웃',
     theme_options: {
@@ -78,6 +85,7 @@ export default {
       ko: '한국어',
       en: '영어'
     },
+    privacy: '개인정보 처리방침',
     logout_confirm: {
       title: '로그아웃',
       message: '정말 로그아웃 하시겠습니까?',

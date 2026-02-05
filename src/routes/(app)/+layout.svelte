@@ -2,7 +2,7 @@
   import { redirect } from '@sveltejs/kit'
   import { page } from '$app/stores'
   import { t } from '$lib/i18n'
-  import { Home, Building, Settings } from 'lucide-svelte'
+  import { NotebookText, Building, Settings } from 'lucide-svelte'
   import type { LayoutData } from './$types'
 
   interface Props {
@@ -32,8 +32,8 @@
         '/'
       )}"
     >
-      <Home size={24} class="transition-transform group-active:scale-95" />
-      <span class="text-[10px] font-medium">{t('nav.home')}</span>
+      <NotebookText size={24} class="transition-transform group-active:scale-95" />
+      <span class="text-xs font-medium">{t('nav.home')}</span>
     </a>
     <a
       href="/buildings"
@@ -42,7 +42,7 @@
       )}"
     >
       <Building size={24} class="transition-transform group-active:scale-95" />
-      <span class="text-[10px] font-medium">{t('nav.buildings')}</span>
+      <span class="text-xs font-medium">{t('nav.buildings')}</span>
     </a>
     <a
       href="/settings"
@@ -51,7 +51,7 @@
       )}"
     >
       <Settings size={24} class="transition-transform group-active:scale-95" />
-      <span class="text-[10px] font-medium">{t('nav.settings')}</span>
+      <span class="text-xs font-medium">{t('nav.settings')}</span>
     </a>
   </nav>
 </div>
