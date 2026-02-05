@@ -6,6 +6,7 @@
   import { browser } from '$app/environment'
 
   import { settings } from '$lib/store/settings.svelte'
+  import { metadata } from '$lib/metadata'
 
   let { children } = $props()
 
@@ -26,6 +27,11 @@
     }
   })
 </script>
+
+<svelte:head>
+  <title>{metadata.title}</title>
+  <meta name="description" content={metadata.description} />
+</svelte:head>
 
 <QueryClientProvider client={queryClient}>
   <!-- Mobile-first container -->
