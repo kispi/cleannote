@@ -1,6 +1,6 @@
 {
-  "name": "CleanNote",
-  "short_name": "CleanNote",
+  "name": "클린노트",
+  "short_name": "클린노트",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -17,7 +17,7 @@
   "background_color": "#ffffff",
   "display": "standalone",
   "start_url": "/",
-  "description": "A dead simple cleaning revenue management app.",
+  "description": "번거로운 장부 정리 없이 오늘 청소와 이번 달 매출을 가장 직관적으로 관리하세요.",
   "orientation": "portrait",
   "categories": [
     "productivity",
