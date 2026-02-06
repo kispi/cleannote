@@ -19,14 +19,6 @@
 *   **Utilities:** Day.js, TanStack Query
 *   **Internationalization (i18n):** Supports Korean (ko) and English (en).
 
-## Roadmap
-- [ ] **Cleaning Log Calendar Dashboard**: Visualize cleaning history in a calendar view.
-- [ ] **Advanced Statistics**: Detailed revenue and performance charts.
-- [ ] **User Roles**: Admin vs Cleaner roles.
-
-## License
-MIT
-
 ## 📏 Coding Standards
 *   **Functions:** Always use **Arrow Functions** (`const func = () => {}`). Avoid `function` keyword and `this`.
 *   **API Responses:** All API JSON responses must use **camelCase** for property keys, even if the database uses snake_case.
