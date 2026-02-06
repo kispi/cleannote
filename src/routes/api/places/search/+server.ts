@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit'
-import { KAKAO_CLIENT_SECRET } from '$env/static/private'
+import { KAKAO_MAP_SECRET } from '$env/static/private'
 import type { RequestHandler } from './$types'
 
 export const GET: RequestHandler = async ({ url }) => {
@@ -14,7 +14,7 @@ export const GET: RequestHandler = async ({ url }) => {
       `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(query)}`,
       {
         headers: {
-          Authorization: 'KakaoAK REDACTED_SECRET'//`KakaoAK ${KAKAO_CLIENT_SECRET}`
+          Authorization: `KakaoAK ${KAKAO_MAP_SECRET}`
         }
       }
     )
