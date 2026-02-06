@@ -1,7 +1,8 @@
+
 import { json } from '@sveltejs/kit'
 import { db } from '$lib/server/db'
 import { cleaningLogs, buildings } from '$lib/server/db/schema'
-import { eq, desc } from 'drizzle-orm'
+import { eq, desc, and, gte, lte, sql } from 'drizzle-orm'
 import dayjs from 'dayjs'
 
 export const POST = async ({ request, locals }) => {
@@ -69,14 +70,36 @@ export const GET = async ({ url, locals }) => {
 
   const limit = Number(url.searchParams.get('limit')) || 20
   const page = Number(url.searchParams.get('page')) || 1
+  const startParam = url.searchParams.get('start')
+  const endParam = url.searchParams.get('end')
   const offset = (page - 1) * limit
   
+  // Build where conditions
+  const conditions = [eq(buildings.user_id, locals.user.id)]
+  if (startParam) conditions.push(gte(cleaningLogs.clean_start, dayjs(startParam).toDate()))
+  if (endParam) conditions.push(lte(cleaningLogs.clean_start, dayjs(endParam).endOf('day').toDate()))
+  
+  const filter = url.searchParams.get('filter') // 'unpaid', 'overpaid', 'all'
+  if (filter === 'unpaid') {
+    const condition = and(
+      eq(cleaningLogs.status, 'completed'),
+      sql`${cleaningLogs.earned_amount} < ${buildings.price_per_clean}`
+    )
+    if (condition) conditions.push(condition)
+  } else if (filter === 'overpaid') {
+     const condition = and(
+      eq(cleaningLogs.status, 'completed'),
+      sql`${cleaningLogs.earned_amount} > ${buildings.price_per_clean}`
+    )
+    if (condition) conditions.push(condition)
+  }
+
   // Fetch total count
   const totalResult = await db
     .select({ count: cleaningLogs.id })
     .from(cleaningLogs)
     .innerJoin(buildings, eq(cleaningLogs.building_id, buildings.id))
-    .where(eq(buildings.user_id, locals.user.id))
+    .where(and(...conditions))
   
   const total = totalResult.length
   
@@ -102,7 +125,7 @@ export const GET = async ({ url, locals }) => {
     })
     .from(cleaningLogs)
     .innerJoin(buildings, eq(cleaningLogs.building_id, buildings.id))
-    .where(eq(buildings.user_id, locals.user.id))
+    .where(and(...conditions))
     .orderBy(desc(cleaningLogs.clean_start))
     .limit(limit)
     .offset(offset)

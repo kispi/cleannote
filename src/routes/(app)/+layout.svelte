@@ -1,8 +1,12 @@
 <script lang="ts">
+  import ModalRenderer from '$lib/components/ui/ModalRenderer.svelte'
+  import ToastRenderer from '$lib/components/ui/ToastRenderer.svelte'
+  import TooltipRenderer from '$lib/components/ui/TooltipRenderer.svelte'
+  import { browser } from '$app/environment'
   import { redirect } from '@sveltejs/kit'
   import { page } from '$app/stores'
   import { t } from '$lib/i18n'
-  import { NotebookText, Building, Settings } from 'lucide-svelte'
+  import { NotebookText, Building, Settings, LayoutDashboard } from 'lucide-svelte'
   import type { LayoutData } from './$types'
 
   interface Props {
@@ -45,6 +49,15 @@
       <span class="text-xs font-medium">{t('nav.buildings')}</span>
     </a>
     <a
+      href="/dashboard"
+      class="group flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 {activeClass(
+        '/dashboard'
+      )}"
+    >
+      <LayoutDashboard size={24} class="transition-transform group-active:scale-95" />
+      <span class="text-xs font-medium">{t('nav.stats')}</span>
+    </a>
+    <a
       href="/settings"
       class="group flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 {activeClass(
         '/settings'
@@ -55,3 +68,6 @@
     </a>
   </nav>
 </div>
+<ModalRenderer />
+<ToastRenderer />
+<TooltipRenderer />

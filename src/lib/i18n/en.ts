@@ -14,6 +14,7 @@ export default {
     greeting: 'Hello, {name}!',
     earned_amount: 'Earned Amount',
     monthly_revenue: 'This Month Revenue',
+    history: 'History',
     today_quests: `Today's Quests`,
     other_quests: 'Other Buildings',
     no_quests: 'No cleaning scheduled for today.',
@@ -32,6 +33,7 @@ export default {
   },
   nav: {
      home: 'Home',
+     stats: 'Stats',
      buildings: 'Buildings',
      settings: 'Settings'
   },
@@ -67,7 +69,6 @@ export default {
     },
     language: 'Language',
     theme: 'Theme',
-    backup: 'Data Backup / Export (under construction)',
     terms: 'Terms of Service',
     logout: 'Log Out',
     logout_confirm: {
@@ -87,6 +88,11 @@ export default {
   navigation: {
     title: 'Select Map App'
   },
+  filter: {
+    all: 'All',
+    unpaid: 'Unpaid',
+    overpaid: 'Overpaid'
+  },
   common: {
     save: 'Save',
     add: 'Add',
@@ -95,6 +101,7 @@ export default {
     cancel: 'Cancel',
     confirm: 'Confirm',
     unit_won: 'won',
+    total: 'Total',
     toast: {
       saved: 'Saved successfully.',
       added: 'Added successfully.',

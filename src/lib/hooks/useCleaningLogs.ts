@@ -3,15 +3,27 @@ import { ui } from '$lib/store/ui.svelte'
 import { t } from '$lib/i18n'
 import type { CleaningLog, CleaningLogUpsert } from '$lib/types/cleaningLog'
 
-export const useCleaningLogs = () => createInfiniteQuery(() => ({
-  queryKey: ['cleaning-logs', 'list'],
+export const useCleaningLogs = (filter: () => string = () => 'all') => createInfiniteQuery(() => ({
+  queryKey: ['cleaning-logs', 'list', filter()],
   queryFn: async ({ pageParam = 1 }) => {
-    const res = await fetch(`/api/cleaning-logs?page=${pageParam}&limit=20`)
+    const res = await fetch(`/api/cleaning-logs?page=${pageParam}&limit=20&filter=${filter()}`)
     if (!res.ok) throw new Error('Failed to fetch logs')
     return res.json()
   },
   initialPageParam: 1,
   getNextPageParam: (lastPage: any) => lastPage.nextPage
+}))
+
+export const useCleaningLogsByPeriod = (start: () => string, end: () => string, filter: () => string = () => 'all') => createQuery(() => ({
+  queryKey: ['cleaning-logs', 'period', start(), end(), filter()],
+  queryFn: async () => {
+    // limit 1000 should be enough for a year? 365 days * 3 cleans = ~1000. Safer to 2000.
+    const res = await fetch(`/api/cleaning-logs?start=${start()}&end=${end()}&limit=2000&filter=${filter()}`)
+    if (!res.ok) throw new Error('Failed to fetch logs')
+    const json = await res.json()
+    return json.data as CleaningLog[]
+  },
+  enabled: !!start() && !!end()
 }))
 
 

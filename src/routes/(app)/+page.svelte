@@ -22,9 +22,11 @@
   const queryClient = useQueryClient()
   const currentMonth = dayjs().format('YYYY-MM')
 
+  let filter = $state('all')
+
   const revenueQuery = useRevenue(currentMonth)
   const buildingsQuery = useAllBuildings()
-  const logsQuery = useCleaningLogs()
+  const logsQuery = useCleaningLogs(() => filter)
   const deleteMutation = useDeleteCleaningLog()
 
   // Flatten pages into a single array
@@ -110,6 +112,20 @@
       </button>
     {/if}
   </header>
+
+  <!-- Filter -->
+  <div class="scrollbar-hide flex items-center gap-2 overflow-x-auto px-6 pb-2">
+    {#each ['all', 'unpaid', 'overpaid'] as f}
+      <button
+        class="rounded-full px-4 py-1.5 text-sm font-medium transition-colors {filter === f
+          ? 'bg-blue-600 text-white'
+          : 'bg-white text-gray-500 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'}"
+        onclick={() => (filter = f)}
+      >
+        {t(`filter.${f}`)}
+      </button>
+    {/each}
+  </div>
 
   <!-- Scrollable Content -->
   <div class="flex-1 overflow-y-auto px-6 pb-24">
@@ -225,11 +241,11 @@
                         </div>
                       {:else if isOverpaid}
                         <div class="mt-1 flex flex-col items-start">
-                          <span class="font-bold text-indigo-500">
+                          <span class="font-bold text-green-500">
                             {priceWithSign(log.earnedAmount)}
                           </span>
                           <span
-                            class="rounded bg-indigo-50 px-1.5 py-0.5 text-xs font-medium text-indigo-500 dark:bg-indigo-900/30"
+                            class="rounded bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-500 dark:bg-green-900/30"
                           >
                             초과 {priceWithSign(diff)}
                           </span>

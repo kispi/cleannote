@@ -14,6 +14,7 @@ export default {
     greeting: '{name}님, 안녕하세요!',
     earned_amount: '수령액',
     monthly_revenue: '이번 달 매출',
+    history: '기록',
     today_quests: '오늘의 청소',
     other_quests: '그 외 건물',
     no_quests: '오늘 예정된 청소가 없습니다.',
@@ -23,7 +24,8 @@ export default {
     no_logs_message: '청소 기록을 추가하여 매출을 관리해보세요!',
     no_buildings_title: '건물을 등록해주세요',
     no_buildings_message: '매출 관리를 시작하려면 건물이 필요합니다.',
-    add_first_building: '첫 건물 추가하기'
+    add_first_building: '첫 건물 추가하기',
+    no_records: '이 달의 기록이 없습니다.'
   },
   cleaning: {
     add_record: '청소 기록 추가',
@@ -35,6 +37,7 @@ export default {
   },
   nav: {
     home: '청소 기록',
+    stats: '매출 통계',
     buildings: '건물',
     settings: '설정'
   },
@@ -95,6 +98,11 @@ export default {
   navigation: {
     title: '지도 앱 선택'
   },
+  filter: {
+    all: '전체',
+    unpaid: '미수',
+    overpaid: '초과'
+  },
   common: {
     save: '저장하기',
     add: '추가하기',
@@ -103,6 +111,7 @@ export default {
     cancel: '취소',
     confirm: '확인',
     unit_won: '₩',
+    total: '총',
     toast: {
       saved: '저장되었습니다.',
       added: '추가되었습니다.',
