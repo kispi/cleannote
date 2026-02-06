@@ -73,18 +73,33 @@
       .sort((a, b) => Number(b.isToday) - Number(a.isToday))
   )
 
-  // Use snapshot if available
-  let snapshotPrice = $state<number | undefined>(undefined)
+  // Determine which building info to display in Read-only view
+  let displayBuilding = $derived(log?.buildingSnapshot || log?.building)
 
-  $effect(() => {
-    if (log && log.buildingSnapshot) {
-      // If snapshot exists, trust it for price logic
-      snapshotPrice = log.buildingSnapshot.pricePerClean
-    } else if (selectedBuildingId) {
-      // Fallback to current building price
-      const b = buildings.find((b) => b.id === selectedBuildingId)
-      snapshotPrice = b?.pricePerClean || undefined
+  // Use snapshot if available, otherwise fall back to current building price
+  // Robust fallback logic for price comparison
+  // 1. Snapshot Price (Priority)
+  // 2. Current Building Price from list
+  // 3. Log's Building Price (if not in list)
+  let snapshotPrice = $derived.by(() => {
+    const snapPrice = log?.buildingSnapshot?.pricePerClean
+    if (snapPrice !== undefined && snapPrice !== null) {
+      return snapPrice
     }
+
+    if (selectedBuildingId) {
+      const b = buildings.find((b) => b.id === selectedBuildingId)
+      if (b?.pricePerClean !== undefined && b?.pricePerClean !== null) {
+        return b.pricePerClean
+      }
+
+      // Fallback: If building not in list but matches log's building
+      if (log?.building?.id === selectedBuildingId && log.building.pricePerClean != null) {
+        return log.building.pricePerClean
+      }
+    }
+
+    return undefined
   })
 
   $effect(() => {
@@ -144,13 +159,13 @@
       <label for="building_id" class="text-base-content mb-2 block text-sm font-medium"
         >{t('building.name')}</label
       >
-      {#if log && log.buildingSnapshot}
-        <!-- Read-only view for Snapshot -->
+      {#if log && displayBuilding}
+        <!-- Read-only view for Snapshot or Existing Building -->
         <div
           class="border-base bg-base-100/50 text-base-content w-full rounded-xl border px-4 py-3"
         >
-          <div class="font-bold">{log.buildingSnapshot.name}</div>
-          <BuildingAddress building={log.buildingSnapshot} />
+          <div class="font-bold">{displayBuilding.name}</div>
+          <BuildingAddress building={displayBuilding} />
         </div>
       {:else}
         <Dropdown

@@ -14,6 +14,7 @@
   import { priceWithSign } from '$lib/utils/format'
   import BuildingAddress from '$lib/components/ui/BuildingAddress.svelte'
   import InfiniteScroll from '$lib/components/ui/InfiniteScroll.svelte'
+  import { sortCleaningLogs } from '$lib/utils/sort'
 
   dayjs.locale('ko')
 
@@ -48,8 +49,8 @@
   }
 
   // Group logs by date
-  let groupedLogs = $derived(
-    allLogs.reduce(
+  let groupedLogs = $derived.by(() => {
+    const grouped = allLogs.reduce(
       (acc: Record<string, any[]>, log: any) => {
         const date = dayjs(log.cleanStart).format('YYYY-MM-DD')
         if (!acc[date]) acc[date] = []
@@ -58,7 +59,14 @@
       },
       {} as Record<string, any[]>
     )
-  )
+
+    // Sort logs within each group
+    Object.keys(grouped).forEach((date) => {
+      grouped[date] = sortCleaningLogs(grouped[date])
+    })
+
+    return grouped
+  })
 </script>
 
 <div class="page-app-home flex h-full flex-col bg-gray-50 dark:bg-gray-900">
@@ -166,15 +174,20 @@
         <div class="space-y-6">
           {#each Object.entries(groupedLogs).sort( (a, b) => b[0].localeCompare(a[0]) ) as [date, logs]}
             <section>
-              <h4 class="text-sub-content mb-3 px-1 text-xs font-bold">
-                {#if date === dayjs().format('YYYY-MM-DD')}
-                  {t('common.today')}
-                {:else if date === dayjs().subtract(1, 'day').format('YYYY-MM-DD')}
-                  {t('common.yesterday')}
-                {:else}
-                  {dayjs(date).format('MM.DD dddd')}
-                {/if}
-              </h4>
+              <div class="mb-3 flex items-center justify-between px-1">
+                <h4 class="text-sub-content text-xs font-bold">
+                  {#if date === dayjs().format('YYYY-MM-DD')}
+                    {t('common.today')}
+                  {:else if date === dayjs().subtract(1, 'day').format('YYYY-MM-DD')}
+                    {t('common.yesterday')}
+                  {:else}
+                    {dayjs(date).format('MM.DD dddd')}
+                  {/if}
+                </h4>
+                <span class="text-xs font-bold text-gray-400 dark:text-gray-500">
+                  {priceWithSign(logs.reduce((sum, log) => sum + (log.earnedAmount || 0), 0))}
+                </span>
+              </div>
               <div class="space-y-3">
                 {#each logs as log (log.id)}
                   {@const snapshot = log.buildingSnapshot}
