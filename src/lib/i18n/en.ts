@@ -102,6 +102,8 @@ export default {
       error: 'An error occurred.'
     },
     date: 'Date',
-    time: 'Time'
+    time: 'Time',
+    date_select: 'Select Date',
+    time_select: 'Select Time'
   }
 } as const

@@ -110,6 +110,8 @@ export default {
       error: '오류가 발생했습니다.'
     },
     date: '날짜',
-    time: '시간'
+    time: '시간',
+    date_select: '날짜 선택',
+    time_select: '시간 선택'
   }
 } as const

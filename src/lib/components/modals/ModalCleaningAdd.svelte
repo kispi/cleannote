@@ -14,6 +14,8 @@
   import ModalConfirm from './ModalConfirm.svelte'
   import type { Building, CleaningLog, CleaningLogUpsert } from '$lib/types'
   import BuildingAddress from '$lib/components/ui/BuildingAddress.svelte'
+  import ModalDatePicker from './ModalDatePicker.svelte'
+  import ModalTimePicker from './ModalTimePicker.svelte'
 
   interface Props {
     buildings: Building[]
@@ -148,7 +150,7 @@
           class="border-base bg-base-100/50 text-base-content w-full rounded-xl border px-4 py-3"
         >
           <div class="font-bold">{log.buildingSnapshot.name}</div>
-          <div class="text-xs text-gray-500">{log.buildingSnapshot.address || ''}</div>
+          <BuildingAddress building={log.buildingSnapshot} />
         </div>
       {:else}
         <Dropdown
@@ -192,11 +194,21 @@
       <label for="date" class="text-base-content mb-2 block text-sm font-medium"
         >{t('common.date')}</label
       >
-      <input
-        type="date"
-        bind:value={date}
-        class="border-base bg-base-100 text-base-content w-full rounded-xl border px-4 py-3 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-      />
+      <button
+        type="button"
+        onclick={() => {
+          ui.modal.show({
+            component: ModalDatePicker,
+            props: {
+              date,
+              onConfirm: (d: string) => (date = d)
+            }
+          })
+        }}
+        class="border-base bg-base-100 text-base-content flex w-full items-center justify-start rounded-xl border px-4 py-3 text-left focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+      >
+        <span class={!date ? 'text-gray-400' : ''}>{date || 'YYYY-MM-DD'}</span>
+      </button>
     </div>
 
     <!-- Time -->
@@ -204,11 +216,21 @@
       <label for="time" class="text-base-content mb-2 block text-sm font-medium"
         >{t('common.time')}</label
       >
-      <input
-        type="time"
-        bind:value={time}
-        class="border-base bg-base-100 text-base-content w-full rounded-xl border px-4 py-3 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-      />
+      <button
+        type="button"
+        onclick={() => {
+          ui.modal.show({
+            component: ModalTimePicker,
+            props: {
+              time,
+              onConfirm: (t: string) => (time = t)
+            }
+          })
+        }}
+        class="border-base bg-base-100 text-base-content flex w-full items-center justify-start rounded-xl border px-4 py-3 text-left focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+      >
+        <span class={!time ? 'text-gray-400' : ''}>{time || 'HH:mm'}</span>
+      </button>
     </div>
 
     <!-- Earned Amount -->

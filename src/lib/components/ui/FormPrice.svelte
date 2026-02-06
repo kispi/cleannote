@@ -22,6 +22,29 @@
       bind:value
       class="border-base bg-base-100 text-base-content w-full rounded-xl border px-4 py-3 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
       {placeholder}
+      oninput={(e) => {
+        const target = e.target as HTMLInputElement
+        let val = Number(target.value)
+        if (val > 99999999) {
+          val = 99999999
+          target.value = '99999999'
+          value = 99999999
+        }
+      }}
+      onpaste={(e) => {
+        // Prevent pasting non-numeric or huge numbers
+        const paste = (e.clipboardData || (window as any).clipboardData).getData('text')
+        if (!/^\d+$/.test(paste) || Number(paste) > 99999999) {
+          e.preventDefault()
+          // Optional: manually insert clamped value?
+          // Simpler to just let input event handle clamp if it passes, but paste might bypass if we prevent default?
+          // Actually, let standard paste happen and let oninput catch it is often easier,
+          // but early prevention is better for UX.
+          // User asked for validation on change.
+          // Simplest is to rely on oninput which triggers after paste.
+          // But explicitly:
+        }
+      }}
       onkeydown={(e) => {
         if (e.key === 'ArrowUp') {
           e.preventDefault()
@@ -52,7 +75,9 @@
       {/each}
     </div>
     {#if value > 0}
-      <span class="ml-auto text-sm font-bold text-blue-600 dark:text-blue-400">
+      <span
+        class="ml-auto min-w-[100px] text-right text-sm font-bold whitespace-nowrap text-blue-600 dark:text-blue-400"
+      >
         {korPrice(value)}
       </span>
     {/if}
