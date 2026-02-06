@@ -28,7 +28,7 @@
 
   <!-- Bottom Navigation -->
   <nav
-    class="flex w-full items-center justify-between rounded-t-3xl bg-white/95 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] backdrop-blur-md dark:border-t dark:border-gray-800 dark:bg-gray-900/95"
+    class="flex w-full items-center justify-between rounded-t-3xl border-t border-gray-200 bg-white/95 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/95"
   >
     <a
       href="/"

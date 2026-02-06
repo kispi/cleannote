@@ -74,12 +74,17 @@
         </p>
       </div>
       <!-- Stats -->
-      <div class="text-right">
-        <p class="text-sub-content text-xs">{t('home.monthly_revenue')}</p>
+      <a
+        href="/dashboard"
+        class="group text-right transition-opacity hover:opacity-80 active:scale-95"
+      >
+        <p class="text-sub-content text-xs transition-colors group-hover:text-blue-500">
+          {t('home.monthly_revenue')}
+        </p>
         <p class="text-xl font-bold text-blue-600 dark:text-blue-400">
           {priceWithSign(revenueQuery.data?.totalAmount || 0)}
         </p>
-      </div>
+      </a>
     </div>
 
     <!-- Add Record Action -->
@@ -163,9 +168,9 @@
             <section>
               <h4 class="text-sub-content mb-3 px-1 text-xs font-bold">
                 {#if date === dayjs().format('YYYY-MM-DD')}
-                  오늘
+                  {t('common.today')}
                 {:else if date === dayjs().subtract(1, 'day').format('YYYY-MM-DD')}
-                  어제
+                  {t('common.yesterday')}
                 {:else}
                   {dayjs(date).format('MM.DD dddd')}
                 {/if}

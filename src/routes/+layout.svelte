@@ -38,9 +38,7 @@
   <div
     class="layout-root bg-base-100 text-base-content min-h-screen font-sans antialiased transition-colors"
   >
-    <main
-      class="bg-base-100 relative mx-auto min-h-screen w-full max-w-7xl shadow-sm sm:px-6 lg:px-8"
-    >
+    <main class="bg-base-100 relative mx-auto min-h-screen w-full max-w-screen-xl">
       {@render children?.()}
     </main>
     <ModalRenderer />

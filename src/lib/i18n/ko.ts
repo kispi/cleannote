@@ -121,6 +121,8 @@ export default {
     date: '날짜',
     time: '시간',
     date_select: '날짜 선택',
-    time_select: '시간 선택'
+    time_select: '시간 선택',
+    today: '오늘',
+    yesterday: '어제'
   }
 } as const

@@ -83,7 +83,9 @@ export default {
     language_options: {
         ko: 'Korean',
         en: 'English'
-    }
+    },
+    backup: 'Data Backup (Coming Soon)',
+    privacy: 'Privacy Policy'
   },
   navigation: {
     title: 'Select Map App'
@@ -111,6 +113,8 @@ export default {
     date: 'Date',
     time: 'Time',
     date_select: 'Select Date',
-    time_select: 'Select Time'
+    time_select: 'Select Time',
+    today: 'Today',
+    yesterday: 'Yesterday'
   }
 } as const
