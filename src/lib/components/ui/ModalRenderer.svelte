@@ -10,6 +10,8 @@
 
   const handleKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Escape' && ui.modal.items.length > 0) {
+      e.preventDefault()
+      e.stopPropagation()
       // Always close the top modal on Escape, ignoring preventCloseOnClickBackdrop
       ui.modal.close()
     }

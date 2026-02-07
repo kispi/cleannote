@@ -88,3 +88,10 @@ trigger: always_on
 - `src/lib/server/db`: Schema and connection.
 - `src/lib/components/modals`: Modal components only.
 - `src/lib/store`: Global runes-based stores (UI helpers).
+
+## 7. UX Writing
+
+- **Tone & Voice:** "Toss-like" simplicity. Friendly, soft, and approachable.
+- **Endings:** Use soft endings like "~해요", "~돼요" instead of formal/stiff ones like "~하십시오", "~되었습니다".
+- **Avoid:** Administrative or bureaucratic terms (e.g., "입력", "완료", "실패"). Use natural language (e.g., "적어주세요", "다 됐어요", "문제가 생겼어요").
+- **Goal:** The user should feel like they are interacting with a helpful, intelligent assistant, not a rigid system.

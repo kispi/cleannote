@@ -81,7 +81,7 @@
     <div class="space-y-6">
       {#each Object.entries(groupedLogs).sort( (a, b) => b[0].localeCompare(a[0]) ) as [date, daysLogs]}
         <section>
-          <div class="mb-3 flex items-center justify-between px-1">
+          <div class="mb-3 flex items-center justify-start gap-3 px-1">
             <h4 class="text-sub-content text-xs font-bold">
               {dayjs(date).format('MM.DD dddd')}
             </h4>

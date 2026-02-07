@@ -32,7 +32,7 @@
 >
   {#each ui.toast.items.filter((i) => !i.position || i.position === 'top-center') as item (item.id)}
     <div
-      class="bg-base-100 pointer-events-auto relative flex min-w-[300px] items-center gap-3 overflow-hidden rounded-lg p-4 shadow-lg ring-1 ring-black/5 dark:ring-white/10"
+      class="bg-base-100 pointer-events-auto relative flex min-w-[350px] items-center gap-4 overflow-hidden rounded-xl px-6 py-4 shadow-lg ring-1 ring-black/5 dark:ring-white/10"
       transition:fly={{ y: -20, duration: 300 }}
     >
       <!-- Colored Strip -->
@@ -48,10 +48,10 @@
             ? 'text-red-500'
             : 'text-blue-500'}
       >
-        <svelte:component this={getIcon(item.type)} size={20} />
+        <svelte:component this={getIcon(item.type)} size={24} />
       </div>
 
-      <span class="text-base-content flex-1 text-sm font-medium">{item.text}</span>
+      <span class="text-base-content flex-1 text-base font-medium">{item.text}</span>
 
       <button
         onclick={() => (ui.toast.items = ui.toast.items.filter((i) => i.id !== item.id))}
@@ -69,7 +69,7 @@
 >
   {#each ui.toast.items.filter((i) => i.position === 'bottom-center') as item (item.id)}
     <div
-      class="bg-base-100 pointer-events-auto relative flex min-w-[300px] items-center gap-3 overflow-hidden rounded-lg p-4 shadow-lg ring-1 ring-black/5 dark:ring-white/10"
+      class="bg-base-100 pointer-events-auto relative flex min-w-[350px] items-center gap-4 overflow-hidden rounded-xl px-6 py-4 shadow-lg ring-1 ring-black/5 dark:ring-white/10"
       transition:fly={{ y: 20, duration: 300 }}
     >
       <!-- Colored Strip -->
@@ -85,10 +85,10 @@
             ? 'text-red-500'
             : 'text-blue-500'}
       >
-        <svelte:component this={getIcon(item.type)} size={20} />
+        <svelte:component this={getIcon(item.type)} size={24} />
       </div>
 
-      <span class="text-base-content flex-1 text-sm font-medium">{item.text}</span>
+      <span class="text-base-content flex-1 text-base font-medium">{item.text}</span>
 
       <button
         onclick={() => (ui.toast.items = ui.toast.items.filter((i) => i.id !== item.id))}

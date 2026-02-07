@@ -41,16 +41,19 @@ export default {
     manage: 'Manage Buildings',
     add: 'Add New Building',
     edit: 'Edit Building',
-    name: 'Building Name',
+    name: 'Building Name (or Alias)',
     address: 'Address (Optional)',
+    address_only: 'Address',
     price: 'Price per cleaning',
     days: 'Schedule',
     memo: 'Memo',
     placeholder: {
       name: 'Ex: Gangnam Villa 101',
       address: 'Enter details',
-      memo: 'Enter notes about this building'
+      memo: 'Enter notes about this building',
+      search: 'Search road name, building name'
     },
+    select_address_guide: '📍 Select an address from the list to link the map!',
     days_option: {
       0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat'
     },

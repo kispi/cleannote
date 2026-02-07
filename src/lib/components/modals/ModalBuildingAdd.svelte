@@ -9,6 +9,8 @@
   import BuildingAddress from '$lib/components/ui/BuildingAddress.svelte'
   import ModalBuildingAdded from './ModalBuildingAdded.svelte'
   import type { BuildingUpsert } from '$lib/types/building'
+  import { Search } from 'lucide-svelte'
+  import InputWrapper from '$lib/components/ui/InputWrapper.svelte'
 
   interface Props {
     building?: BuildingUpsert
@@ -32,6 +34,8 @@
   let price = $state(building?.pricePerClean || 0)
   let days = $state(building?.scheduledDays ? building.scheduledDays.split(',').map(Number) : [])
   let memo = $state(building?.memo || '')
+
+  let showAddressGuide = $derived(address.length > 0 && !lat)
 
   // Search State
   let searchResults = $state<any[]>([])
@@ -61,6 +65,13 @@
   const handleAddressInput = (e: Event) => {
     const target = e.target as HTMLInputElement
     address = target.value
+    // Clear location data if user types manually (forces re-selection for accuracy)
+    if (lat || lng) {
+      lat = null
+      lng = null
+      apiName = ''
+      apiAddress = ''
+    }
     debouncedSearch(address)
   }
 
@@ -197,28 +208,42 @@
       <label for="name" class="text-base-content mb-2 block text-sm font-medium"
         >{t('building.name')} <span class="text-red-500">*</span></label
       >
-      <input
-        type="text"
-        bind:value={name}
-        placeholder={t('building.placeholder.name')}
-        class="border-base bg-base-100 text-base-content placeholder:text-sub-content w-full rounded-xl border px-4 py-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-      />
+      <InputWrapper>
+        <input
+          id="name"
+          type="text"
+          bind:value={name}
+          placeholder={t('building.placeholder.name')}
+          class="input-wrapper-child"
+        />
+      </InputWrapper>
     </div>
 
     <div>
-      <label for="address" class="text-base-content mb-2 block text-sm font-medium"
-        >{t('building.address')}</label
-      >
+      <label for="address" class="text-base-content mb-2 block text-sm font-medium">
+        {#if showAddressGuide}
+          <span>{t('building.address_only')}</span>
+          <span class="text-info ml-2 text-xs">{t('building.select_address_guide')}</span>
+        {:else}
+          {t('building.address')}
+        {/if}
+      </label>
       <div class="relative" use:clickOutsideAction>
-        <input
-          type="text"
-          bind:value={address}
-          oninput={handleAddressInput}
-          onclick={handleAddressClick}
-          placeholder={t('building.placeholder.address')}
-          class="border-base bg-base-100 text-base-content placeholder:text-sub-content w-full rounded-xl border px-4 py-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-          autocomplete="off"
-        />
+        <InputWrapper>
+          {#snippet leftIcon()}
+            <Search size={18} />
+          {/snippet}
+          <input
+            id="address"
+            type="text"
+            bind:value={address}
+            oninput={handleAddressInput}
+            onclick={handleAddressClick}
+            placeholder={t('building.placeholder.search')}
+            class="input-wrapper-child"
+            autocomplete="off"
+          />
+        </InputWrapper>
         {#if showDropdown && searchResults.length > 0}
           <div
             class="border-base bg-base-100 absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-auto rounded-xl border shadow-xl"
@@ -226,7 +251,7 @@
             {#each searchResults as place}
               <button
                 type="button"
-                class="text-base-content flex w-full flex-col items-start px-4 py-3 text-left text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                class="text-base-content hover:bg-base-200 flex w-full flex-col items-start px-4 py-3 text-left text-sm transition-colors"
                 onclick={() => selectPlace(place)}
               >
                 <div class="text-base-content font-bold">
@@ -240,6 +265,7 @@
           </div>
         {/if}
       </div>
+
       {#if apiName}
         <div class="mt-2 px-1">
           <BuildingAddress building={{ apiName, apiAddress, lat, lng }} />
@@ -276,13 +302,15 @@
       <label for="memo" class="text-base-content mb-2 block text-sm font-medium"
         >{t('building.memo')}</label
       >
-      <textarea
-        id="memo"
-        bind:value={memo}
-        placeholder={t('building.placeholder.memo')}
-        rows="3"
-        class="border-base bg-base-100 text-base-content placeholder:text-sub-content w-full resize-none rounded-xl border px-4 py-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-      ></textarea>
+      <InputWrapper>
+        <textarea
+          id="memo"
+          bind:value={memo}
+          placeholder={t('building.placeholder.memo')}
+          rows="3"
+          class="input-wrapper-child resize-none"
+        ></textarea>
+      </InputWrapper>
     </div>
 
     <div class="mt-6 flex gap-3">
