@@ -3,7 +3,6 @@
   import { t } from '$lib/i18n'
   import { ui } from '$lib/store/ui.svelte'
   import dayjs from 'dayjs'
-  import 'dayjs/locale/ko'
   import { Trash2, Plus, CalendarClock } from 'lucide-svelte'
   import ModalCleaningAdd from '$lib/components/modals/ModalCleaningAdd.svelte'
   import ModalBuildingAdd from '$lib/components/modals/ModalBuildingAdd.svelte'
@@ -15,8 +14,9 @@
   import BuildingAddress from '$lib/components/ui/BuildingAddress.svelte'
   import InfiniteScroll from '$lib/components/ui/InfiniteScroll.svelte'
   import { sortCleaningLogs } from '$lib/utils/sort'
+  import DailyRevenueHeader from '$lib/components/ui/DailyRevenueHeader.svelte'
 
-  dayjs.locale('ko')
+  import { settings } from '$lib/store/settings.svelte'
 
   let { data } = $props()
 
@@ -24,6 +24,7 @@
   const currentMonth = dayjs().format('YYYY-MM')
 
   let filter = $state('all')
+  let today = $derived(dayjs().locale(settings.locale))
 
   const revenueQuery = useRevenue(currentMonth)
   const buildingsQuery = useAllBuildings()
@@ -78,7 +79,7 @@
           {t('home.greeting', { name: data.user.name })}
         </h1>
         <p class="text-sub-content mt-1">
-          {dayjs().format('YYYY.MM.DD dddd')}
+          {today.format('YYYY.MM.DD dddd')}
         </p>
       </div>
       <!-- Stats -->
@@ -174,20 +175,10 @@
         <div class="space-y-6">
           {#each Object.entries(groupedLogs).sort( (a, b) => b[0].localeCompare(a[0]) ) as [date, logs]}
             <section>
-              <div class="mb-3 flex items-center justify-between px-1">
-                <h4 class="text-sub-content text-xs font-bold">
-                  {#if date === dayjs().format('YYYY-MM-DD')}
-                    {t('common.today')}
-                  {:else if date === dayjs().subtract(1, 'day').format('YYYY-MM-DD')}
-                    {t('common.yesterday')}
-                  {:else}
-                    {dayjs(date).format('MM.DD dddd')}
-                  {/if}
-                </h4>
-                <span class="text-xs font-bold text-gray-400 dark:text-gray-500">
-                  {priceWithSign(logs.reduce((sum, log) => sum + (log.earnedAmount || 0), 0))}
-                </span>
-              </div>
+              <DailyRevenueHeader
+                {date}
+                amount={logs.reduce((sum, log) => sum + (log.earnedAmount || 0), 0)}
+              />
               <div class="space-y-3">
                 {#each logs as log (log.id)}
                   {@const snapshot = log.buildingSnapshot}

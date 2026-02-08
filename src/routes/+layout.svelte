@@ -1,10 +1,10 @@
 <script lang="ts">
   import '../app.css'
+  import 'dayjs/locale/ko'
   import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
   import ModalRenderer from '$lib/components/ui/ModalRenderer.svelte'
   import ToastRenderer from '$lib/components/ui/ToastRenderer.svelte'
   import { browser } from '$app/environment'
-
   import { settings } from '$lib/store/settings.svelte'
   import { metadata } from '$lib/metadata'
 

@@ -7,6 +7,7 @@
   import { ui } from '$lib/store/ui.svelte'
   import ModalCleaningAdd from '$lib/components/modals/ModalCleaningAdd.svelte'
   import { sortCleaningLogs } from '$lib/utils/sort'
+  import DailyRevenueHeader from '$lib/components/ui/DailyRevenueHeader.svelte'
 
   interface Props {
     year: number
@@ -81,14 +82,10 @@
     <div class="space-y-6">
       {#each Object.entries(groupedLogs).sort( (a, b) => b[0].localeCompare(a[0]) ) as [date, daysLogs]}
         <section>
-          <div class="mb-3 flex items-center justify-start gap-3 px-1">
-            <h4 class="text-sub-content text-xs font-bold">
-              {dayjs(date).format('MM.DD dddd')}
-            </h4>
-            <span class="text-xs font-bold text-gray-400 dark:text-gray-500">
-              {priceWithSign(daysLogs.reduce((sum, log) => sum + (log.earnedAmount || 0), 0))}
-            </span>
-          </div>
+          <DailyRevenueHeader
+            {date}
+            amount={daysLogs.reduce((sum, log) => sum + (log.earnedAmount || 0), 0)}
+          />
           <div class="space-y-3">
             {#each daysLogs as log}
               {@const snapshot = log.buildingSnapshot}

@@ -3,8 +3,6 @@
   import { ChevronLeft, ChevronRight } from 'lucide-svelte'
   import dayjs from 'dayjs'
   import { useCleaningLogsByPeriod } from '$lib/hooks/useCleaningLogs'
-  import 'dayjs/locale/ko'
-  dayjs.locale('ko')
   import { useAllBuildings } from '$lib/hooks/useBuildings'
   import RevenueChart from '$lib/components/dashboard/RevenueChart.svelte'
   import MonthRevenueDetail from '$lib/components/dashboard/MonthRevenueDetail.svelte'
