@@ -35,7 +35,8 @@
   let days = $state(building?.scheduledDays ? building.scheduledDays.split(',').map(Number) : [])
   let memo = $state(building?.memo || '')
 
-  let showAddressGuide = $derived(address.length > 0 && !lat)
+  let isInputFocused = $state(false)
+  let showAddressGuide = $derived(isInputFocused || (address.length > 0 && !lat))
 
   // Search State
   let searchResults = $state<any[]>([])
@@ -239,6 +240,8 @@
             bind:value={address}
             oninput={handleAddressInput}
             onclick={handleAddressClick}
+            onfocus={() => (isInputFocused = true)}
+            onblur={() => (isInputFocused = false)}
             placeholder={t('building.placeholder.search')}
             class="input-wrapper-child"
             autocomplete="off"
