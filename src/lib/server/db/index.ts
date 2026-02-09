@@ -12,12 +12,17 @@ if (!DB_HOST || !DB_USER || !DB_PASS || !DB_NAME) {
 // Remove protocol if present
 const host = DB_HOST.replace(/^https?:\/\//, '')
 
-const client = await mysql.createConnection({
+const client = await mysql.createPool({
   host,
   port: parseInt(DB_PORT || '3306'),
   user: DB_USER,
   password: DB_PASS,
-  database: DB_NAME
+  database: DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0
 })
 
 export const db = drizzle(client, { schema, mode: 'default' })
